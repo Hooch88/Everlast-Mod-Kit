@@ -56,3 +56,7 @@ To put everything back exactly as the game shipped it, use Steam: right-click Ev
 - Built for game patch 1389. A game update may replace these files, so come back and apply your changes again.
 - Back up your Worlds folder and try your changes on a test world first.
 - Saving directly needs Chrome or Edge. Other browsers use the download instead. Your browser may also refuse to save into a Steam library inside `Program Files`, and the download works there too.
+
+## Credits
+
+Based on Everlast Tweaker by StoneAndTimber. The stacking and totem changes build on that tool, and some of its code is still used here.
