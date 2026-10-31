@@ -24,7 +24,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 
 ## How to use it
 
-1. **Download the page.** Right-click [Everlast Mod Kit.html](https://github.com/Hooch88/Everlast-Toolbox/raw/master/Everlast%20Mod%20Kit.html) and choose **Save link as**. A normal click only shows its code. Then double-click the saved file to open it. Chrome or Edge is recommended. You need to be online, because the page loads its database tool and fonts from the internet.
+1. **Download the page.** Right-click [Everlast Mod Kit.html](https://github.com/Hooch88/Everlast-Mod-Kit/raw/master/Everlast%20Mod%20Kit.html) and choose **Save link as**. A normal click only shows its code. Then double-click the saved file to open it. Chrome or Edge is recommended. You need to be online, because the page loads its database tool and fonts from the internet.
 2. **Close Everlast**, including its local server.
 3. **Add your game files.** In Steam, right-click Everlast and choose Manage, then Browse local files. Drag these two files onto their boxes on the page:
    - `Assets\Database\Definitions\ItemDefs.db`
