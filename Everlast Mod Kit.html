@@ -386,7 +386,7 @@
 
       <section class="receipt" id="receipt" hidden>
         <h2>Receipt</h2>
-        <p class="plain">Your changes are ready, but nothing is saved yet. They only exist in this page until you download the files below. Your game folder hasn't changed.</p>
+        <p class="plain">Your changes are ready, but nothing is saved yet. They only exist in this page until you save them below. Your game folder hasn't changed.</p>
         <table class="tally">
           <thead><tr><th>Change</th><th>Item file</th><th>Server file</th></tr></thead>
           <tbody id="tallyBody"></tbody>
@@ -397,7 +397,11 @@
             <button class="btn secondary" id="backupBtn">Save a copy of the files I added</button>
             <p class="plain">Optional, but a good safety net. Skip this if you already have backups.</p>
           </li>
-          <li>
+          <li id="saveStep">
+            <button class="btn" id="saveBtn">Save to my game folder</button>
+            <p class="plain">This replaces the two files in your game folder. Close Everlast first. Your browser will ask for permission.</p>
+          </li>
+          <li id="downloadStep">
             <button class="btn" id="downloadBtn">Download my modded files</button>
             <p class="plain">This saves your changes as two new files. Your browser may ask permission to download both.</p>
           </li>
@@ -505,7 +509,7 @@
     </main>
   </div>
 
-  <p class="fine">Everything happens in your browser. This tool edits copies and never writes to your game folder.</p>
+  <p class="fine">Everything happens in your browser. Nothing is uploaded, and your files only change when you choose to save.</p>
 
 </div>
 
@@ -516,6 +520,7 @@ let engineFailed = false;
 let readyFiles = null;
 let readyStats = null;
 let loadedTerms = null;
+const fileHandles = {};
 const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'stackNewItems', 'upgradeResources'];
 const STACK_TERMS = [['stackNewItems', 'newStackSize', 'newStackAmend', 'newSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
 let currentWorldJson = null;
@@ -575,7 +580,7 @@ function checkReady() {
   } else if (changes === 0) {
     $('signNote').textContent = 'Change at least one term to sign.';
   } else {
-    $('signNote').innerHTML = `<b>${changes} ${changes === 1 ? 'change' : 'changes'}.</b> Your game folder stays untouched until you replace the files yourself.`;
+    $('signNote').innerHTML = `<b>${changes} ${changes === 1 ? 'change' : 'changes'}.</b> Your game folder stays untouched until you save.`;
   }
 }
 
@@ -698,6 +703,13 @@ function showAttached(slot, input, expected) {
   else state.textContent = wrong ? `This is ${file.name}. It should be ${expected}.` : `${file.name} attached`;
 }
 
+function setInputFile(input, file) {
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  input.files = transfer.files;
+}
+
+// Chrome and Edge hand over a handle for each file, which lets the page save straight back over it.
 function wireDrop(slot, input) {
   slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragging'); });
   slot.addEventListener('dragleave', () => slot.classList.remove('dragging'));
@@ -705,9 +717,53 @@ function wireDrop(slot, input) {
     e.preventDefault();
     slot.classList.remove('dragging');
     if (!e.dataTransfer.files.length) return;
+    // The drop's data is gone after this event, so ask for the handle before anything else.
+    const handle = e.dataTransfer.items[0]?.getAsFileSystemHandle?.();
+    fileHandles[input.id] = null;
+    handle?.then(h => { if (h?.kind === 'file') fileHandles[input.id] = h; }).catch(console.warn);
     input.files = e.dataTransfer.files;
     input.dispatchEvent(new Event('change'));
   });
+
+  input.addEventListener('click', () => { fileHandles[input.id] = null; });
+  slot.addEventListener('click', async e => {
+    if (!window.showOpenFilePicker || e.target === input) return;
+    e.preventDefault();
+    try {
+      const [handle] = await showOpenFilePicker({ types: [{ accept: { 'application/octet-stream': [input.accept] } }] });
+      setInputFile(input, await handle.getFile());
+      fileHandles[input.id] = handle;
+      input.dispatchEvent(new Event('change'));
+    } catch(err) {
+      if (err.name !== 'AbortError') input.click();
+    }
+  });
+}
+
+// Asks for every file up front, while the click still counts, and only then starts writing.
+async function saveOverFiles(targets) {
+  const answers = await Promise.all(targets.map(([handle]) => handle.requestPermission({ mode: 'readwrite' })));
+  if (answers.some(answer => answer !== 'granted')) throw new DOMException('Permission was not given.', 'NotAllowedError');
+  const writers = await Promise.all(targets.map(([handle]) => handle.createWritable()));
+  for (const [i, writer] of writers.entries()) {
+    await writer.write(targets[i][1]);
+    await writer.close();
+  }
+}
+
+function saveErrorMessage(err) {
+  return err.name === 'NotAllowedError'
+    ? "The files weren't saved because your browser wasn't given permission."
+    : "The files couldn't be saved. Close Everlast and its local server, then try again.";
+}
+
+function showSaveError(err) {
+  const area = $('errorArea');
+  area.textContent = saveErrorMessage(err) + ' You can also use the download button instead.';
+  const detail = document.createElement('pre');
+  detail.textContent = err.message;
+  area.appendChild(detail);
+  area.hidden = false;
 }
 
 [['clientFile', 'clientSlot'], ['serverFile', 'serverSlot']].forEach(([id, slotId]) => {
@@ -1009,6 +1065,9 @@ function showReceipt() {
   $('remark').textContent = closingRemark(total);
   $('backupBtn').textContent = 'Save a copy of the files I added';
   $('downloadBtn').textContent = 'Download my modded files';
+  const direct = canSaveGameFiles();
+  $('saveStep').hidden = !direct;
+  $('downloadStep').hidden = direct;
   $('deliveryIntro').hidden = true;
   $('deliverySteps').hidden = true;
   $('receipt').hidden = false;
@@ -1048,6 +1107,33 @@ $('backupBtn').onclick = () => {
   if (cFile) triggerDownload(cFile, 'ItemDefs.db.original_bak');
   if (sFile) triggerDownload(sFile, 'Raptor.Game.db.original_bak');
   $('backupBtn').textContent = 'Save another copy';
+};
+
+function canSaveGameFiles() {
+  return ['clientFile', 'serverFile'].every(id => fileHandles[id]?.name === EXPECTED_FILES[id]);
+}
+
+$('saveBtn').onclick = async () => {
+  if (!readyFiles) return;
+  const ids = ['clientFile', 'serverFile'];
+  const button = $('saveBtn');
+  button.disabled = true;
+  $('errorArea').hidden = true;
+  try {
+    await saveOverFiles([[fileHandles.clientFile, readyFiles.client], [fileHandles.serverFile, readyFiles.server]]);
+  } catch(err) {
+    showSaveError(err);
+    $('downloadStep').hidden = false;
+    button.disabled = false;
+    return;
+  }
+  button.disabled = false;
+
+  // The attached copies went stale when the files changed, so read the saved ones back.
+  for (const id of ids) setInputFile($(id), await fileHandles[id].getFile());
+  await readAttachedTerms();
+  $('signNote').innerHTML = '<b>Saved to your game folder.</b> Your new terms apply the next time you start Everlast.';
+  $('signNote').scrollIntoView({ block: 'center' });
 };
 
 $('downloadBtn').onclick = () => {
@@ -1123,7 +1209,7 @@ $('worldFile').onchange = async (e) => {
   }
 };
 
-$('saveWorldBtn').onclick = () => {
+$('saveWorldBtn').onclick = async () => {
   if (!currentWorldJson) return;
   const updatedWorld = { ...currentWorldJson };
   applyIfChanged(updatedWorld, 'XpRate', $('wXpRate'), Number);
@@ -1134,6 +1220,21 @@ $('saveWorldBtn').onclick = () => {
   applyIfChanged(updatedWorld, 'PvPEnabled', $('wPvP'), v => v === 'true');
 
   const updatedStr = JSON.stringify(updatedWorld, null, 2);
+
+  const handle = fileHandles.worldFile;
+  let saveProblem = '';
+  if (handle?.name === currentWorldFileName) {
+    try {
+      await saveOverFiles([[handle, updatedStr]]);
+      setInputFile($('worldFile'), await handle.getFile());
+      await $('worldFile').onchange({ target: $('worldFile') });
+      worldLog(`Saved over ${currentWorldFileName}. Your new terms apply the next time you enter the world.`);
+      return;
+    } catch(err) {
+      saveProblem = `${saveErrorMessage(err)}\n`;
+    }
+  }
+
   const blob = new Blob([updatedStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -1144,7 +1245,7 @@ $('saveWorldBtn').onclick = () => {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 15000);
 
-  worldLog(`Sealed. ${currentWorldFileName} is in your downloads.\n` +
+  worldLog(`${saveProblem}Sealed. ${currentWorldFileName} is in your downloads.\n` +
     `Replace the file in Documents\\My Games\\Everlast\\Worlds\\<WorldName>\\ and your new terms apply the next time you enter the world.`);
 };
 
