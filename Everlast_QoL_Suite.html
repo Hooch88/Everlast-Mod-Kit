@@ -3,517 +3,458 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Everlast: Undying Tale — QoL & Balance Suite</title>
+  <title>The Fine Print: Everlast Mod Tool</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=IM+Fell+English:ital@0;1&family=Reenie+Beanie&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0a0d14;
-      --card-bg: #121824;
-      --card-border: #1e2838;
-      --primary-gold: #e5b958;
-      --gold-gradient: linear-gradient(135deg, #e5b958 0%, #c49638 100%);
-      --accent-blue: #38bdf8;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --success: #34d399;
-      --danger: #f87171;
+      --dusk: #24202e;
+      --desk: #1b1823;
+      --mist: #e9e5ee;
+      --mist-2: #b9b2c6;
+      --sage: #a9bb8a;
+      --parchment: #e8e0cf;
+      --parchment-2: #d8cdb6;
+      --ink: #2b2533;
+      --ink-2: #5c5361;
+      --death-ink: #3f3a9e;
+      --wax: #6d2547;
+      --warn: #8a3b12;
+      --display: 'Alegreya', Georgia, serif;
+      --body: 'Alegreya Sans', 'Segoe UI', sans-serif;
+      --legal: 'IM Fell English', Georgia, serif;
+      --hand: 'Reenie Beanie', 'Segoe Print', cursive;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Inter', sans-serif;
-      padding: 30px 20px;
-      line-height: 1.5;
+      background: var(--dusk);
+      color: var(--mist);
+      font: 17px/1.45 var(--body);
+      padding: 28px 16px 64px;
     }
 
-    .container { max-width: 960px; margin: 0 auto; }
+    .wall { max-width: 760px; margin: 0 auto; display: grid; gap: 20px; }
 
-    /* HEADER */
-    header {
-      background: linear-gradient(180deg, #182234 0%, #121824 100%);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 24px 30px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
+    /* MASTHEAD */
+    .masthead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 20px; }
+    .wordmark { font: 700 34px/1.1 var(--display); }
+    .masthead p:not(.wordmark) { color: var(--mist-2); font-size: 15px; }
 
-    h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 24px;
-      color: var(--primary-gold);
-      letter-spacing: 0.5px;
-    }
-
-    header p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
-
-    .badge {
-      background: rgba(229, 185, 88, 0.12);
-      color: var(--primary-gold);
-      border: 1px solid rgba(229, 185, 88, 0.3);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    /* NAVIGATION TABS */
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #1f2a3c;
-      padding-bottom: 8px;
-    }
-
-    .nav-tab {
-      background: #141b27;
-      color: var(--text-muted);
-      border: 1px solid #233044;
-      padding: 10px 22px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
+    /* BOOKMARKS */
+    .bookmarks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: -28px; position: relative; }
+    .bookmark {
+      all: unset;
       cursor: pointer;
-      transition: all 0.2s;
+      background: var(--desk);
+      color: var(--mist-2);
+      padding: 10px 16px 34px;
+      font: 700 19px/1.2 var(--display);
     }
+    .bookmark small { display: block; font: 400 14px var(--body); }
+    .bookmark.active { background: var(--parchment-2); color: var(--ink); }
+    .bookmark.active small { color: var(--ink-2); }
+    .bookmark:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
 
-    .nav-tab.active {
-      background: var(--gold-gradient);
-      color: #0b0f19;
-      border-color: transparent;
-    }
+    /* THE SHEET */
+    .tab-content { display: none; position: relative; }
+    .tab-content.active { display: block; filter: drop-shadow(0 12px 24px rgba(10, 6, 16, .55)); }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* CARDS */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .card-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--gold-gradient);
-      color: #0b0f19;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    h2 { font-size: 18px; font-weight: 600; color: #fff; }
-
-    /* FILE INPUTS */
-    .file-grid {
+    .sheet {
+      background: var(--parchment);
+      color: var(--ink);
+      font-family: var(--legal);
+      padding: clamp(34px, 6vw, 56px) clamp(18px, 6vw, 56px);
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-top: 14px;
+      gap: 26px;
+      min-width: 0;
     }
+    .sheet h1 { font: 400 clamp(29px, 6vw, 40px)/1.1 var(--legal); text-align: center; }
+    .sheet h2 { font: 400 23px/1.2 var(--legal); border-bottom: 1px solid var(--parchment-2); padding-bottom: 4px; }
+    .sub { font-style: italic; text-align: center; color: var(--ink-2); margin-top: -18px; font-size: 18px; }
+    .section { display: grid; gap: 14px; min-width: 0; }
 
-    .file-drop {
-      border: 1px dashed #334155;
-      background: #0f141f;
-      padding: 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
+    .plain { font: 16px/1.35 var(--body); color: var(--ink-2); }
+    .plain code { font: 14px Consolas, monospace; overflow-wrap: anywhere; }
 
-    .file-drop:hover { border-color: var(--primary-gold); }
+    /* CONDITIONS */
+    .conditions { list-style: none; display: grid; gap: 6px; font: 500 17px/1.35 var(--body); }
+    .conditions li { display: grid; grid-template-columns: 22px 1fr; }
+    .conditions li::before { content: '\2726'; color: var(--wax); }
 
-    .file-drop label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 4px;
-    }
-
-    .path-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      font-family: monospace;
-    }
-
-    input[type="file"] { width: 100%; font-size: 12px; color: var(--text-muted); }
-
-    /* CONTROLS */
-    .options-grid {
+    /* FILE SLOTS */
+    .slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .slot {
+      position: relative;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
+      gap: 4px;
+      align-content: start;
+      padding: 12px;
+      border: 1px dashed var(--ink-2);
+      font: 16px/1.3 var(--body);
+      cursor: pointer;
+      min-width: 0;
     }
+    .slot:hover, .slot.dragging { background: var(--parchment-2); }
+    .slot:focus-within { outline: 2px solid var(--death-ink); outline-offset: 2px; }
+    .slot.attached { border-style: solid; border-color: var(--death-ink); }
+    .slot b { font-size: 17px; }
+    .slot input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .slot-path { font: 13px Consolas, monospace; color: var(--ink-2); overflow-wrap: anywhere; }
+    .slot-state { color: var(--ink-2); }
+    .slot.attached .slot-state { font: 28px/1 var(--hand); color: var(--death-ink); }
+    .slot.wrong .slot-state { font: 700 15px/1.3 var(--body); color: var(--warn); }
 
-    .option-group {
-      background: #0e131d;
-      border: 1px solid #1a2230;
-      border-radius: 10px;
-      padding: 18px;
+    /* CLAUSES */
+    .clause { display: grid; grid-template-columns: 2.1em minmax(0, 1fr); gap: 0 6px; font-size: 20px; line-height: 1.3; }
+    .num { color: var(--ink-2); }
+    .clause > div { display: grid; gap: 3px; min-width: 0; }
+    .term { position: relative; cursor: pointer; display: block; padding-left: 28px; }
+    .term:hover s { text-decoration-color: rgba(63, 58, 158, .35); }
+    .term:focus-within { outline: 2px solid var(--death-ink); outline-offset: 3px; }
+    .term input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .box { position: absolute; left: 0; top: 4px; width: 18px; height: 18px; border: 1px solid var(--ink-2); }
+    .term input:checked ~ .box::after {
+      content: '\2715';
+      position: absolute;
+      inset: -6px -4px 0 0;
+      font: 700 21px/1 var(--body);
+      color: var(--death-ink);
+      text-align: center;
     }
+    .term s { text-decoration-thickness: 2px; text-decoration-color: transparent; transition: text-decoration-color .2s; }
+    .term input:checked ~ s { text-decoration-color: var(--death-ink); }
+    .hand { font: 30px/.8 var(--hand); color: var(--death-ink); opacity: 0; transition: opacity .2s; margin-left: 8px; white-space: nowrap; }
+    .term input:checked ~ .hand { opacity: 1; }
 
-    .group-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--primary-gold);
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .amend { font: 29px/1 var(--hand); color: var(--death-ink); padding-left: 28px; }
+    .amend.off { opacity: .35; }
+    .clause .plain { padding-left: 28px; }
+    .clause.open .plain { padding-left: 0; }
+
+    .ink-num {
+      width: 2.5em;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px dashed var(--death-ink);
+      color: var(--death-ink);
+      font: 32px/1 var(--hand);
+      text-align: center;
+      -moz-appearance: textfield;
+      appearance: textfield;
     }
+    .ink-num::placeholder { color: var(--ink-2); font-size: 22px; }
+    .ink-num::-webkit-outer-spin-button, .ink-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .ink-num:focus-visible, select:focus-visible { outline: 2px solid var(--death-ink); outline-offset: 2px; }
 
-    .checkbox-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 14px;
+    /* EXHIBIT */
+    .exhibit { border: 1px solid var(--parchment-2); padding: 14px; display: grid; gap: 12px; min-width: 0; }
+    .exhibit figcaption { font-size: 19px; }
+    .count { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; font: 17px var(--body); }
+    .count strong { font: 700 44px/1 var(--display); color: var(--death-ink); font-variant-numeric: tabular-nums; }
+    .packs { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
+    .packs small { display: block; margin-top: 6px; font: 15px var(--body); color: var(--ink-2); }
+    .pack-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; }
+    .pack-grid.pouch { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .pack-grid i { aspect-ratio: 1; border: 1px solid var(--ink-2); opacity: .45; }
+    .pack-grid i.on { background: var(--death-ink); border-color: var(--death-ink); opacity: 1; }
+    .pack-try { display: grid; gap: 2px; font: 16px var(--body); }
+    .pack-try input { width: 100%; accent-color: var(--death-ink); }
+
+    /* SIGNING */
+    .sign { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--parchment-2); padding-top: 20px; }
+    .sign-note { font: 17px/1.35 var(--body); color: var(--ink-2); flex: 1 1 240px; min-width: 0; white-space: pre-line; }
+    .sign-note b { color: var(--ink); }
+    .seal {
+      all: unset;
+      cursor: pointer;
+      width: 116px;
+      height: 116px;
+      flex: none;
+      border-radius: 47% 53% 50% 50% / 52% 48% 53% 47%;
+      background: var(--wax);
+      color: var(--parchment);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font: 700 17px/1.1 var(--body);
+      box-shadow: inset 0 0 0 5px rgba(0, 0, 0, .14), inset 0 0 0 7px rgba(255, 255, 255, .1), 0 3px 5px rgba(43, 37, 51, .4);
+      transition: transform .15s;
+    }
+    .seal:hover:not(:disabled) { transform: rotate(-3deg) scale(1.03); }
+    .seal:focus-visible { outline: 2px solid var(--death-ink); outline-offset: 3px; }
+    .seal:disabled { cursor: not-allowed; background: var(--parchment-2); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--ink-2); }
+    .seal.done:disabled { background: var(--wax); color: var(--parchment); }
+    .seal.done { animation: stamp .3s cubic-bezier(.2, 1.5, .5, 1); }
+    @keyframes stamp { from { transform: scale(1.4) rotate(-8deg); } }
+
+    /* RECEIPT */
+    .receipt { display: grid; gap: 14px; min-width: 0; }
+    .receipt[hidden], .steps[hidden] { display: none; }
+    .tally { border-collapse: collapse; width: 100%; font: 16px/1.3 var(--body); }
+    .tally th, .tally td { text-align: right; padding: 5px 0 5px 12px; font-variant-numeric: tabular-nums; }
+    .tally th:first-child, .tally td:first-child { text-align: left; padding-left: 0; }
+    .tally th { font-weight: 700; border-bottom: 1px solid var(--ink-2); }
+    .remark { font: 30px/1 var(--hand); color: var(--death-ink); }
+    .next { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+    .btn {
+      all: unset;
+      cursor: pointer;
+      background: var(--wax);
+      color: var(--parchment);
+      font: 700 17px var(--body);
+      padding: 10px 18px;
+    }
+    .btn:hover { filter: brightness(1.15); }
+    .btn:focus-visible, .link:focus-visible { outline: 2px solid var(--death-ink); outline-offset: 2px; }
+    .link { all: unset; cursor: pointer; text-decoration: underline; font: 16px var(--body); color: var(--ink-2); }
+    .link[hidden] { display: none; }
+    .steps { display: grid; gap: 8px; font: 16px/1.35 var(--body); padding-left: 22px; }
+    .steps code { font: 14px Consolas, monospace; overflow-wrap: anywhere; }
+    .error { font: 16px/1.35 var(--body); color: var(--warn); }
+    .error pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 13px Consolas, monospace; margin-top: 6px; }
+
+    /* WORLD RIDER */
+    fieldset { border: 0; display: grid; gap: 26px; min-width: 0; transition: opacity .2s; }
+    fieldset:disabled { opacity: .45; }
+    .slot.wide { max-width: none; }
+    .rate-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
+    .rule-row { display: grid; gap: 2px; font-size: 20px; }
+    select {
+      background: transparent;
+      border: 0;
+      border-bottom: 1px dashed var(--death-ink);
+      color: var(--death-ink);
+      font: 28px/1.4 var(--hand);
+      padding-bottom: 4px;
+      max-width: 100%;
       cursor: pointer;
     }
-    .checkbox-row:last-child { margin-bottom: 0; }
+    select option { font: 16px var(--body); color: var(--ink); background: var(--parchment); }
 
-    .checkbox-row input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--primary-gold);
-      cursor: pointer;
-      margin-top: 2px;
+    .fine { color: var(--mist-2); font-size: 15px; text-align: center; }
+
+    @media (max-width: 600px) {
+      .slots { grid-template-columns: minmax(0, 1fr); }
+      .packs { grid-template-columns: minmax(0, 1fr); }
+      .pack-grid.pouch { width: 50%; }
+      .bookmark { font-size: 17px; padding-inline: 12px; }
     }
-
-    .label-text { font-size: 14px; font-weight: 500; color: #fff; }
-    .sub-text { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-    .number-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255,255,255,0.05);
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
     }
-
-    input[type="number"], input[type="text"], select {
-      background: #161c28;
-      border: 1px solid #2e3a4e;
-      color: #fff;
-      padding: 7px 10px;
-      border-radius: 6px;
-      font-family: inherit;
-      font-weight: 500;
-      font-size: 13.5px;
-    }
-
-    input[type="number"] { width: 85px; text-align: right; }
-    select { width: 160px; }
-
-    /* BUTTONS */
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    button {
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-    }
-
-    .btn-gold {
-      background: var(--gold-gradient);
-      color: #0b0f19;
-      border: none;
-    }
-    .btn-gold:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: #1b2332;
-      color: #cbd5e1;
-      border-color: #334155;
-    }
-    .btn-secondary:hover:not(:disabled) { background: #242f42; color: #fff; }
-
-    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-
-    /* CONSOLE LOG */
-    pre {
-      background: #080b10;
-      border: 1px solid #161e2b;
-      border-radius: 8px;
-      padding: 16px;
-      font-family: 'Consolas', monospace;
-      font-size: 12.5px;
-      color: #94a3b8;
-      max-height: 220px;
-      overflow-y: auto;
-      margin-top: 16px;
-      white-space: pre-wrap;
-    }
-
-    .status-pill {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 12px;
-      margin-top: 8px;
-    }
-    .status-ok { background: rgba(52, 211, 153, 0.15); color: var(--success); }
-    .status-warn { background: rgba(229, 185, 88, 0.15); color: var(--primary-gold); }
-    .status-err { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="wall">
 
-  <!-- HEADER -->
-  <header>
+  <header class="masthead">
     <div>
-      <h1>Everlast: Undying Tale</h1>
-      <p>Quality of Life, Stacking &amp; World Server Suite · No-Install</p>
+      <p class="wordmark">The Fine Print</p>
+      <p>Unofficial mod tool for Everlast: Undying Tale</p>
     </div>
-    <div class="badge">v2.2 · Patch 1389+ Ready</div>
+    <p>Built for game patch 1389 and later</p>
   </header>
 
-  <!-- NAVIGATION -->
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('databases')">Database Tweaks (Stacking &amp; Curse)</button>
-    <button class="nav-tab" onclick="switchTab('worlds')">World &amp; Server Settings (Rates &amp; Difficulty)</button>
+  <div class="bookmarks" role="tablist">
+    <button class="bookmark active" role="tab" aria-selected="true" onclick="switchTab('databases')">The Contract<small>Curse and stacking</small></button>
+    <button class="bookmark" role="tab" aria-selected="false" onclick="switchTab('worlds')">World Rider<small>Rates and difficulty</small></button>
   </div>
 
-  <!-- TAB 1: DATABASES -->
+  <!-- THE CONTRACT -->
   <div id="tab-databases" class="tab-content active">
+    <main class="sheet">
+      <h1>Terms of Your Resurrection</h1>
+      <p class="sub">Amendments, requested by the undersigned</p>
 
-    <!-- STEP 1: LOAD DATABASES -->
-    <section class="card">
-      <div class="card-header">
-        <div class="card-num">1</div>
-        <h2>Load Game Databases</h2>
-      </div>
-      <p style="font-size: 13px; color: var(--text-muted);">
-        Select the client and server databases from your Steam game directory.
-      </p>
+      <section class="section">
+        <h2>Before you sign</h2>
+        <ul class="conditions">
+          <li>Close Everlast first, including its local server.</li>
+          <li>For solo and private worlds only.</li>
+        </ul>
+      </section>
 
-      <div class="file-grid">
-        <div class="file-drop">
-          <label>Client Database (ItemDefs.db)</label>
-          <div class="path-hint">Everlast\Assets\Database\Definitions\ItemDefs.db</div>
-          <input type="file" id="clientFile" accept=".db">
+      <section class="section">
+        <h2>Attachments</h2>
+        <p class="plain">Open your Steam game folder and drag each file onto its box. You can also click a box to choose the file.</p>
+        <div class="slots">
+          <label class="slot" id="clientSlot">
+            <b>Item file</b>
+            <span class="slot-path">Everlast\Assets\Database\Definitions\ItemDefs.db</span>
+            <span class="slot-state">Drop ItemDefs.db here</span>
+            <input type="file" id="clientFile" accept=".db">
+          </label>
+          <label class="slot" id="serverSlot">
+            <b>Server file</b>
+            <span class="slot-path">Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db</span>
+            <span class="slot-state">Drop Raptor.Game.db here</span>
+            <input type="file" id="serverFile" accept=".db">
+          </label>
         </div>
-        <div class="file-drop">
-          <label>Server Database (Raptor.Game.db)</label>
-          <div class="path-hint">Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db</div>
-          <input type="file" id="serverFile" accept=".db">
-        </div>
-      </div>
+      </section>
 
-      <div class="btn-row" style="align-items: center;">
-        <button id="engineBtn" class="btn-secondary">Load SQLite Engine</button>
-        <span id="engineStatus" class="status-pill status-warn">Engine not loaded (Requires Internet for sql.js)</span>
-      </div>
-    </section>
+      <section class="section" id="clauses">
+        <h2>Terms</h2>
+        <p class="plain">Tick a term to strike it out.</p>
 
-    <!-- STEP 2: CUSTOMIZE -->
-    <section class="card">
-      <div class="card-header">
-        <div class="card-num">2</div>
-        <h2>Customize Balance &amp; Stacking</h2>
-      </div>
-
-      <div class="options-grid">
-        <!-- CURSE REMOVAL -->
-        <div class="option-group">
-          <div class="group-title">Curse Management</div>
-          
-          <label class="checkbox-row">
-            <input type="checkbox" id="noGatherCurse" checked>
-            <div>
-              <div class="label-text">Zero Gathering &amp; Mining Curse</div>
-              <div class="sub-text">Removes the +5 to +12 curse when chopping trees, mining ore, and picking plants.</div>
-            </div>
-          </label>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="noCombatCurse" checked>
-            <div>
-              <div class="label-text">Zero Combat &amp; Attack Curse</div>
-              <div class="sub-text">Removes curse gain from 125 weapons, spells, abilities, and dodges.</div>
-            </div>
-          </label>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="noStealCurse" checked>
-            <div>
-              <div class="label-text">Zero Thievery Curse</div>
-              <div class="sub-text">Removes +4 curse tax when picking up world items or stealing food.</div>
-            </div>
-          </label>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="noCraftCurse" checked>
-            <div>
-              <div class="label-text">Zero Crafting Curse</div>
-              <div class="sub-text">Removes curse gained when crafting items.</div>
-            </div>
-          </label>
-
-          <div class="number-row">
-            <div>
-              <div class="label-text">Totem Cleansing Multiplier</div>
-              <div class="sub-text">Buffs negative curse on Fragile/Stable/Robust totems.</div>
-            </div>
-            <input type="number" id="totemMult" min="1" max="10" step="0.5" value="1.0">
+        <div class="clause">
+          <span class="num">&sect;1</span>
+          <div>
+            <label class="term"><input type="checkbox" id="noGatherCurse" checked><span class="box"></span><s>The Pyrrhic shall gain +5 to +12 Curse for gathering.</s><span class="hand">none, thanks</span></label>
+            <p class="plain">No curse from chopping trees, mining ore or picking plants</p>
           </div>
         </div>
 
-        <!-- INVENTORY STACKING -->
-        <div class="option-group">
-          <div class="group-title">Inventory Stacking</div>
-
-          <label class="checkbox-row">
-            <input type="checkbox" id="stackNewItems" checked>
-            <div>
-              <div class="label-text">Stack Food, Potions &amp; Tools</div>
-              <div class="sub-text">Enables stacking for cooked meals, potions, moulds, and unstrung bows.</div>
-            </div>
-          </label>
-
-          <div class="number-row">
-            <div>
-              <div class="label-text">New Stacking Size</div>
-              <div class="sub-text">Max stack for items enabled above.</div>
-            </div>
-            <input type="number" id="newStackSize" min="2" max="999" value="100">
-          </div>
-
-          <label class="checkbox-row" style="margin-top: 14px;">
-            <input type="checkbox" id="upgradeResources" checked>
-            <div>
-              <div class="label-text">Increase Resource Stacks</div>
-              <div class="sub-text">Increases vanilla 5-stack items (Ores, Bars, Milk, Logs, Fish).</div>
-            </div>
-          </label>
-
-          <div class="number-row">
-            <div>
-              <div class="label-text">Resource Stack Size</div>
-              <div class="sub-text">Default vanilla was 5.</div>
-            </div>
-            <input type="number" id="resourceStackSize" min="5" max="999" value="100">
+        <div class="clause">
+          <span class="num">&sect;2</span>
+          <div>
+            <label class="term"><input type="checkbox" id="noCombatCurse" checked><span class="box"></span><s>The Pyrrhic shall gain Curse for every blow struck.</s><span class="hand">struck</span></label>
+            <p class="plain">No curse from 125 weapons, spells, abilities and dodges</p>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- STEP 3: PREVIEW & DOWNLOAD -->
-    <section class="card">
-      <div class="card-header">
-        <div class="card-num">3</div>
-        <h2>Preview &amp; Apply</h2>
-      </div>
+        <div class="clause">
+          <span class="num">&sect;3</span>
+          <div>
+            <label class="term"><input type="checkbox" id="noStealCurse" checked><span class="box"></span><s>Light fingers shall cost +4 Curse.</s><span class="hand">finders keepers</span></label>
+            <p class="plain">No curse for picking up world items or stealing food</p>
+          </div>
+        </div>
 
-      <div class="btn-row">
-        <button id="previewBtn" class="btn-secondary" disabled>Preview Changes</button>
-        <button id="applyBtn" class="btn-gold" disabled>Prepare Modified Databases</button>
-        <button id="downloadBtn" class="btn-secondary" disabled>Download Modified Files</button>
-        <button id="backupBtn" class="btn-secondary" disabled>Download Original Backups</button>
-      </div>
+        <div class="clause">
+          <span class="num">&sect;4</span>
+          <div>
+            <label class="term"><input type="checkbox" id="noCraftCurse" checked><span class="box"></span><s>Every craft shall carry a Curse.</s><span class="hand">waived</span></label>
+            <p class="plain">No curse when crafting items</p>
+          </div>
+        </div>
 
-      <pre id="logArea">Ready. Select both database files and load the SQLite engine to begin.</pre>
-    </section>
+        <div class="clause open">
+          <span class="num">&sect;5</span>
+          <div>
+            <div class="rate-row">
+              <span>Totems shall cleanse at</span>
+              <input class="ink-num" type="number" id="totemMult" min="1" max="10" step="0.5" value="1.0" aria-label="Totem strength multiplier">
+              <span>times their usual strength.</span>
+            </div>
+            <p class="plain">Makes Fragile, Stable, Robust and Mighty totems clear more curse. 1 leaves them as they are.</p>
+          </div>
+        </div>
 
+        <div class="clause">
+          <span class="num">&sect;6</span>
+          <div>
+            <label class="term"><input type="checkbox" id="stackNewItems" checked><span class="box"></span><s>Meals, potions and tools shall not stack.</s></label>
+            <p class="amend" id="newStackAmend">Let them stack to <input class="ink-num" type="number" id="newStackSize" min="2" max="999" value="100" aria-label="Stack size for meals, potions and tools"></p>
+            <p class="plain">Lets cooked meals, potions, moulds and unstrung bows stack</p>
+          </div>
+        </div>
+
+        <div class="clause">
+          <span class="num">&sect;7</span>
+          <div>
+            <label class="term"><input type="checkbox" id="upgradeResources" checked><span class="box"></span><s>Resources shall stack no higher than 5.</s></label>
+            <p class="amend" id="resourceAmend">Let them stack to <input class="ink-num" type="number" id="resourceStackSize" min="5" max="999" value="100" aria-label="Stack size for resources"></p>
+            <p class="plain">Raises stacks of ores, bars, milk, logs and fish</p>
+          </div>
+        </div>
+
+        <figure class="exhibit">
+          <figcaption>Exhibit A: what &sect;7 does to your pack</figcaption>
+          <p class="count"><strong id="slots">2</strong><span>of 30 backpack slots used by 150 ore</span></p>
+          <div class="packs" aria-hidden="true">
+            <div><div class="pack-grid" id="packGrid"></div><small>Backpack</small></div>
+            <div><div class="pack-grid pouch" id="pouchGrid"></div><small>Pouch slots, up to 5 more</small></div>
+          </div>
+          <label class="pack-try">Try a stack size
+            <input type="range" id="packRange" min="5" max="200" value="100">
+          </label>
+        </figure>
+      </section>
+
+      <section class="sign">
+        <p class="sign-note" id="signNote"></p>
+        <button class="seal" id="seal" disabled>Sign and seal</button>
+      </section>
+
+      <div class="error" id="errorArea" hidden></div>
+
+      <section class="receipt" id="receipt" hidden>
+        <h2>Receipt</h2>
+        <p class="plain">Both files passed their health check. Your originals have not been touched.</p>
+        <table class="tally">
+          <thead><tr><th>Change</th><th>Item file</th><th>Server file</th></tr></thead>
+          <tbody id="tallyBody"></tbody>
+        </table>
+        <p class="remark" id="remark"></p>
+        <div class="next">
+          <button class="btn" id="nextBtn"></button>
+          <button class="link" id="skipBackupBtn">I already have backups</button>
+        </div>
+        <p class="plain" id="nextHint"></p>
+        <ol class="steps" id="deliverySteps" hidden>
+          <li>Put the new <code>ItemDefs.db</code> in <code>Everlast\Assets\Database\Definitions\</code>, replacing the old one.</li>
+          <li>Put the new <code>Raptor.Game.db</code> in <code>Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\</code>, replacing the old one.</li>
+          <li>Back up your Worlds folder, then try the changes on cheap items first.</li>
+          <li>To undo, rename your <code>.original_bak</code> files back to their original names and swap them in. Verifying the game files in Steam should also restore them.</li>
+          <li>If the game updates, it may replace these files. Come back and sign again.</li>
+        </ol>
+      </section>
+    </main>
   </div>
 
-  <!-- TAB 2: WORLD SETTINGS -->
+  <!-- WORLD RIDER -->
   <div id="tab-worlds" class="tab-content">
-    <section class="card">
-      <div class="card-header">
-        <div class="card-num">&#9874;</div>
-        <h2>Unlock World Server Rates &amp; Difficulty</h2>
-      </div>
-      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">
-        The game locks these settings after world creation, but your local server reads them from <code style="color:var(--primary-gold);">worldsettings.json</code>. Browse for your world's settings file to freely unlock and customize your XP, Gathering, Loot rates, and Difficulty!
-      </p>
+    <main class="sheet">
+      <h1>Rider to the Contract</h1>
+      <p class="sub">Terms governing one world</p>
 
-      <div class="file-drop" style="margin-bottom: 20px;">
-        <label>Select your World Settings File (worldsettings.json)</label>
-        <div class="path-hint">Documents\My Games\Everlast\Worlds\&lt;YourWorldName&gt;\worldsettings.json</div>
-        <input type="file" id="worldFile" accept=".json">
-      </div>
+      <section class="section">
+        <h2>Attachment</h2>
+        <p class="plain">The game locks these settings after you create a world, but your local server reads them from this file. Close Everlast first, then drag the file onto this box. You can also click the box to choose it.</p>
+        <label class="slot wide" id="worldSlot">
+          <b>World settings file</b>
+          <span class="slot-path">Documents\My Games\Everlast\Worlds\&lt;YourWorldName&gt;\worldsettings.json</span>
+          <span class="slot-state">Drop worldsettings.json here</span>
+          <input type="file" id="worldFile" accept=".json">
+        </label>
+      </section>
 
-      <div id="worldEditorArea" style="opacity: 0.4; pointer-events: none; transition: all 0.2s;">
-        <div class="options-grid">
-          
-          <!-- MULTIPLIERS -->
-          <div class="option-group">
-            <div class="group-title">Gameplay Rates &amp; Multipliers</div>
-            
-            <div class="number-row" style="border:none; margin:0; padding:0 0 10px 0;">
-              <div>
-                <div class="label-text">XP Rate Multiplier</div>
-                <div class="sub-text">Multiplier for all combat, gathering &amp; craft XP.</div>
-              </div>
-              <input type="number" id="wXpRate" min="0.1" max="100" step="0.5" value="3">
-            </div>
-
-            <div class="number-row">
-              <div>
-                <div class="label-text">Gathering Rate Multiplier</div>
-                <div class="sub-text">Resources gathered per node/tree/rock.</div>
-              </div>
-              <input type="number" id="wGatherRate" min="0.1" max="100" step="0.5" value="3">
-            </div>
-
-            <div class="number-row">
-              <div>
-                <div class="label-text">Loot Rate Multiplier</div>
-                <div class="sub-text">Item quantity dropped from chests/mobs.</div>
-              </div>
-              <input type="number" id="wLootRate" min="0.1" max="100" step="0.5" value="3">
+      <fieldset id="worldEditorArea" disabled>
+        <section class="section">
+          <h2>Rates</h2>
+          <div class="clause open">
+            <span class="num">&sect;1</span>
+            <div>
+              <div class="rate-row"><span>All XP shall be earned at</span><input class="ink-num" type="number" id="wXpRate" min="0.1" max="100" step="0.5" value="3" aria-label="XP rate multiplier"><span>times the usual rate.</span></div>
+              <p class="plain">Covers combat, gathering and crafting XP</p>
             </div>
           </div>
+          <div class="clause open">
+            <span class="num">&sect;2</span>
+            <div>
+              <div class="rate-row"><span>Each node shall yield</span><input class="ink-num" type="number" id="wGatherRate" min="0.1" max="100" step="0.5" value="3" aria-label="Gathering rate multiplier"><span>times its usual haul.</span></div>
+              <p class="plain">Resources from each tree, rock or plant</p>
+            </div>
+          </div>
+          <div class="clause open">
+            <span class="num">&sect;3</span>
+            <div>
+              <div class="rate-row"><span>All loot shall drop at</span><input class="ink-num" type="number" id="wLootRate" min="0.1" max="100" step="0.5" value="3" aria-label="Loot rate multiplier"><span>times the usual amount.</span></div>
+              <p class="plain">Items from chests and monsters</p>
+            </div>
+          </div>
+        </section>
 
-          <!-- RULES & DIFFICULTY -->
-          <div class="option-group">
-            <div class="group-title">Rules &amp; Penalties</div>
-
-            <div class="number-row" style="border:none; margin:0; padding:0 0 10px 0;">
-              <div>
-                <div class="label-text">Difficulty</div>
-                <div class="sub-text">World difficulty preset.</div>
-              </div>
+        <section class="section">
+          <h2>Rules and penalties</h2>
+          <div class="clause open">
+            <span class="num">&sect;4</span>
+            <div class="rule-row">
+              <label for="wDifficulty">This world shall be judged as</label>
               <select id="wDifficulty">
                 <option value="Hylic" selected>Hylic (Relaxed / Casual)</option>
                 <option value="Psychic">Psychic (Standard)</option>
@@ -523,12 +464,11 @@
                 <option value="OneShot">OneShot (Permadeath)</option>
               </select>
             </div>
-
-            <div class="number-row">
-              <div>
-                <div class="label-text">Death Penalty</div>
-                <div class="sub-text">What happens when your character dies.</div>
-              </div>
+          </div>
+          <div class="clause open">
+            <span class="num">&sect;5</span>
+            <div class="rule-row">
+              <label for="wDeathPenalty">Upon death, the Pyrrhic shall</label>
               <select id="wDeathPenalty">
                 <option value="KeepInventory">Keep Inventory (Never Drop Items)</option>
                 <option value="DeathContainer" selected>Death Container (Standard Drop)</option>
@@ -536,67 +476,186 @@
                 <option value="DestroyAllCarried">Destroy All Carried (Items Deleted)</option>
               </select>
             </div>
-
-            <div class="number-row">
-              <div>
-                <div class="label-text">PvP Enabled</div>
-                <div class="sub-text">Allow damage between players.</div>
-              </div>
+          </div>
+          <div class="clause open">
+            <span class="num">&sect;6</span>
+            <div class="rule-row">
+              <label for="wPvP">Damage between players shall be</label>
               <select id="wPvP">
                 <option value="true" selected>Enabled</option>
                 <option value="false">Disabled</option>
               </select>
             </div>
           </div>
+        </section>
 
-        </div>
-
-        <div class="btn-row" style="margin-top: 24px;">
-          <button id="saveWorldBtn" class="btn-gold">Download Updated worldsettings.json</button>
-        </div>
-      </div>
-
-      <pre id="worldLogArea" style="margin-top: 18px;">Select your worldsettings.json above to load your world's settings.</pre>
-    </section>
+        <section class="sign">
+          <p class="sign-note" id="worldLogArea">Add your world's settings file above to read its terms.</p>
+          <button class="seal" id="saveWorldBtn">Seal this world</button>
+        </section>
+      </fieldset>
+    </main>
   </div>
+
+  <p class="fine">Everything happens in your browser. This tool edits copies and never writes to your game folder.</p>
 
 </div>
 
 <script>
 'use strict';
 let SQL = null;
+let engineFailed = false;
 let readyFiles = null;
+let readyStats = null;
+let nextStep = 'backup';
 let currentWorldJson = null;
 let currentWorldFileName = "worldsettings.json";
 
 const $ = id => document.getElementById(id);
 
+const EXPECTED_FILES = { clientFile: 'ItemDefs.db', serverFile: 'Raptor.Game.db' };
+
 function switchTab(tabId) {
-  document.querySelectorAll('.nav-tab').forEach((t, i) => {
-    t.classList.toggle('active', (tabId === 'databases' && i === 0) || (tabId === 'worlds' && i === 1));
+  document.querySelectorAll('.bookmark').forEach((t, i) => {
+    const active = (tabId === 'databases' && i === 0) || (tabId === 'worlds' && i === 1);
+    t.classList.toggle('active', active);
+    t.setAttribute('aria-selected', String(active));
   });
   $('tab-databases').classList.toggle('active', tabId === 'databases');
   $('tab-worlds').classList.toggle('active', tabId === 'worlds');
 }
 
-function log(msg) { $('logArea').textContent = msg; }
+// Tear the top and bottom of each sheet with a repeatable jagged edge.
+document.querySelectorAll('.sheet').forEach((sheet, index) => {
+  let seed = 7 + index * 13;
+  const r = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  const n = 46, top = [], bottom = [];
+  for (let i = 0; i <= n; i++) top.push(`${i / n * 100}% ${(r() * 7).toFixed(1)}px`);
+  for (let i = n; i >= 0; i--) bottom.push(`${i / n * 100}% calc(100% - ${(r() * 9).toFixed(1)}px)`);
+  sheet.style.clipPath = `polygon(${top.concat(bottom).join(',')})`;
+});
+
 function worldLog(msg) { $('worldLogArea').textContent = msg; }
 
-function checkReady() {
-  const ok = !!SQL && $('clientFile').files.length === 1 && $('serverFile').files.length === 1;
-  $('previewBtn').disabled = !ok;
-  $('applyBtn').disabled = !ok;
-  $('backupBtn').disabled = !ok;
-  $('downloadBtn').disabled = !readyFiles;
+function countChanges() {
+  const struck = document.querySelectorAll('#clauses input[type="checkbox"]:checked').length;
+  return struck + (Number($('totemMult').value) > 1 ? 1 : 0);
 }
 
-['clientFile', 'serverFile'].forEach(id => {
-  $(id).onchange = () => { readyFiles = null; checkReady(); };
+function checkReady() {
+  const haveFiles = $('clientFile').files.length === 1 && $('serverFile').files.length === 1;
+  const changes = countChanges();
+  const seal = $('seal');
+  if (readyFiles) return;
+
+  seal.classList.remove('done');
+  seal.textContent = 'Sign and seal';
+  seal.disabled = !SQL || !haveFiles || changes === 0;
+
+  if (engineFailed) {
+    $('signNote').textContent = "Part of this tool couldn't load. Check your internet connection and reload the page.";
+  } else if (!SQL) {
+    $('signNote').textContent = 'Getting the tool ready...';
+  } else if (!haveFiles) {
+    $('signNote').textContent = 'Add both game files above, then sign here.';
+  } else if (changes === 0) {
+    $('signNote').textContent = 'Strike out at least one term to sign.';
+  } else {
+    $('signNote').innerHTML = `<b>${changes} ${changes === 1 ? 'change' : 'changes'}.</b> Your original files stay untouched until you replace them yourself.`;
+  }
+}
+
+function invalidateSeal() {
+  readyFiles = null;
+  readyStats = null;
+  $('receipt').hidden = true;
+  $('errorArea').hidden = true;
+  checkReady();
+}
+
+function syncAmendments() {
+  [['stackNewItems', 'newStackSize', 'newStackAmend'], ['upgradeResources', 'resourceStackSize', 'resourceAmend']].forEach(([box, num, amend]) => {
+    $(num).disabled = !$(box).checked;
+    $(amend).classList.toggle('off', !$(box).checked);
+  });
+}
+
+function clampClauseNumber(input) {
+  const value = Number(input.value);
+  if (input.value === '' || Number.isNaN(value)) input.value = input.defaultValue;
+  else input.value = Math.min(Number(input.max), Math.max(Number(input.min), value));
+}
+
+// Exhibit A
+for (let i = 0; i < 30; i++) $('packGrid').appendChild(document.createElement('i'));
+for (let i = 0; i < 5; i++) $('pouchGrid').appendChild(document.createElement('i'));
+
+function drawPack() {
+  const on = $('upgradeResources').checked;
+  const stack = on ? Math.max(5, Number($('resourceStackSize').value) || 5) : 5;
+  const used = Math.ceil(150 / stack);
+  $('packRange').disabled = !on;
+  $('packRange').value = stack;
+  $('slots').textContent = used;
+  [...$('packGrid').children].forEach((cell, i) => { cell.className = i < used ? 'on' : ''; });
+}
+
+$('packRange').oninput = () => {
+  $('resourceStackSize').value = $('packRange').value;
+  drawPack();
+  invalidateSeal();
+};
+
+$('clauses').addEventListener('input', () => {
+  syncAmendments();
+  drawPack();
+  invalidateSeal();
+});
+
+$('clauses').querySelectorAll('input[type="number"]').forEach(input => {
+  input.addEventListener('change', () => {
+    clampClauseNumber(input);
+    drawPack();
+    invalidateSeal();
+  });
+});
+
+// File slots
+// A file dropped outside a box would make the browser open it and leave this page.
+['dragover', 'drop'].forEach(type => window.addEventListener(type, e => e.preventDefault()));
+
+function showAttached(slot, input, expected) {
+  const file = input.files[0];
+  const state = slot.querySelector('.slot-state');
+  const wrong = !!file && !!expected && file.name !== expected;
+  slot.classList.toggle('attached', !!file && !wrong);
+  slot.classList.toggle('wrong', wrong);
+  if (!file) state.textContent = `Drop ${expected} here`;
+  else state.textContent = wrong ? `This is ${file.name}. It should be ${expected}.` : `${file.name} attached`;
+}
+
+function wireDrop(slot, input) {
+  slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragging'); });
+  slot.addEventListener('dragleave', () => slot.classList.remove('dragging'));
+  slot.addEventListener('drop', e => {
+    e.preventDefault();
+    slot.classList.remove('dragging');
+    if (!e.dataTransfer.files.length) return;
+    input.files = e.dataTransfer.files;
+    input.dispatchEvent(new Event('change'));
+  });
+}
+
+[['clientFile', 'clientSlot'], ['serverFile', 'serverSlot']].forEach(([id, slotId]) => {
+  wireDrop($(slotId), $(id));
+  $(id).onchange = () => {
+    showAttached($(slotId), $(id), EXPECTED_FILES[id]);
+    invalidateSeal();
+  };
 });
 
 // Load sql.js
-$('engineBtn').onclick = async () => {
-  $('engineBtn').disabled = true;
+async function loadEngine() {
   for (let base of ['https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/', 'https://unpkg.com/sql.js@1.13.0/dist/']) {
     try {
       await new Promise((resolve, reject) => {
@@ -607,16 +666,13 @@ $('engineBtn').onclick = async () => {
         document.head.appendChild(s);
       });
       SQL = await initSqlJs({ locateFile: file => base + file });
-      $('engineStatus').textContent = 'SQLite Engine Ready (Local Wasm)';
-      $('engineStatus').className = 'status-pill status-ok';
       checkReady();
       return;
     } catch(e) { console.warn(e); }
   }
-  $('engineStatus').textContent = 'Failed to load SQLite. Check internet.';
-  $('engineStatus').className = 'status-pill status-err';
-  $('engineBtn').disabled = false;
-};
+  engineFailed = true;
+  checkReady();
+}
 
 // Database Helpers
 function fetchRows(db, query, params=[]) {
@@ -736,7 +792,7 @@ function processDb(db, options, isServer) {
   return stats;
 }
 
-async function runMod(isPreview) {
+async function runMod() {
   const options = {
     noGatherCurse: $('noGatherCurse').checked,
     noCombatCurse: $('noCombatCurse').checked,
@@ -749,7 +805,6 @@ async function runMod(isPreview) {
     resourceStackSize: Number($('resourceStackSize').value)
   };
 
-  log('Processing databases in browser memory…');
   const dbs = [];
 
   try {
@@ -776,40 +831,65 @@ async function runMod(isPreview) {
       throw new Error(`Integrity check failed: Client=${cCheck}, Server=${sCheck}`);
     }
 
-    let report = `[SUCCESS] SQLite Integrity: 100% OK on both files!\n\n` +
-      `CLIENT (ItemDefs.db):\n` +
-      `  - Stacking definitions changed: ${cStats.stackChanged}\n` +
-      `  - Curse triggers zeroed: ${cStats.curseChanged}\n` +
-      `  - Totems buffed: ${cStats.totemsBuffed}\n\n` +
-      `SERVER (Raptor.Game.db):\n` +
-      `  - Stacking definitions changed: ${sStats.stackChanged}\n` +
-      `  - Curse triggers zeroed: ${sStats.curseChanged}\n` +
-      `  - Totems buffed: ${sStats.totemsBuffed}\n\n` +
-      (isPreview ? 
-        `[PREVIEW MODE] No files altered. Click 'Prepare Modified Databases' when ready to export.` :
-        `[EXPORT READY] Click 'Download Modified Files' and place them into your game folder.`);
-
-    log(report);
-
-    if (!isPreview) {
-      readyFiles = {
-        client: clientDb.export(),
-        server: serverDb.export()
-      };
-    } else {
-      readyFiles = null;
-    }
-    checkReady();
+    readyStats = { client: cStats, server: sStats };
+    readyFiles = {
+      client: clientDb.export(),
+      server: serverDb.export()
+    };
 
   } catch(e) {
-    log(`[ERROR]: ${e.message}\n${e.stack}`);
+    readyFiles = null;
+    readyStats = null;
+    const area = $('errorArea');
+    area.textContent = "These files couldn't be changed. Check that you added the right files and that they haven't been modded by another tool.";
+    const detail = document.createElement('pre');
+    detail.textContent = e.message;
+    area.appendChild(detail);
+    area.hidden = false;
   } finally {
     dbs.forEach(d => d.close());
   }
 }
 
-$('previewBtn').onclick = () => runMod(true);
-$('applyBtn').onclick = () => runMod(false);
+// TODO(human): closingRemark
+function closingRemark(totalChanges) {
+  return 'Signed and sealed.';
+}
+
+function showReceipt() {
+  const { client, server } = readyStats;
+  const rows = [
+    ['Stacking rules changed', client.stackChanged, server.stackChanged],
+    ['Curse sources removed', client.curseChanged, server.curseChanged],
+    ['Totems strengthened', client.totemsBuffed, server.totemsBuffed]
+  ];
+  $('tallyBody').replaceChildren(...rows.map(cells => {
+    const tr = document.createElement('tr');
+    cells.forEach(value => {
+      const td = document.createElement('td');
+      td.textContent = value;
+      tr.appendChild(td);
+    });
+    return tr;
+  }));
+  const total = rows.reduce((sum, [, c, s]) => sum + c + s, 0);
+  $('remark').textContent = closingRemark(total);
+  nextStep = 'backup';
+  showNextStep();
+  $('receipt').hidden = false;
+}
+
+function showNextStep() {
+  const steps = {
+    backup: ['Save my original files', 'Keep these somewhere safe. They are how you undo this.'],
+    download: ['Download my modded files', 'Your browser may ask permission to download two files.'],
+    done: ['Download again', 'Now move the two files into your game folder:']
+  };
+  $('nextBtn').textContent = steps[nextStep][0];
+  $('nextHint').textContent = steps[nextStep][1];
+  $('skipBackupBtn').hidden = nextStep !== 'backup';
+  $('deliverySteps').hidden = nextStep !== 'done';
+}
 
 function triggerDownload(bytes, filename) {
   const blob = new Blob([bytes], { type: 'application/octet-stream' });
@@ -823,17 +903,41 @@ function triggerDownload(bytes, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 15000);
 }
 
-$('downloadBtn').onclick = () => {
-  if (!readyFiles) return;
-  triggerDownload(readyFiles.client, 'ItemDefs.db');
-  triggerDownload(readyFiles.server, 'Raptor.Game.db');
+$('seal').onclick = async () => {
+  const seal = $('seal');
+  seal.disabled = true;
+  $('errorArea').hidden = true;
+  $('signNote').textContent = 'Signing...';
+  await runMod();
+  if (!readyFiles) {
+    checkReady();
+    return;
+  }
+  seal.classList.add('done');
+  seal.textContent = 'Sealed';
+  $('signNote').innerHTML = '<b>Signed.</b> Change any term above to sign again.';
+  showReceipt();
 };
 
-$('backupBtn').onclick = async () => {
-  const cFile = $('clientFile').files[0];
-  const sFile = $('serverFile').files[0];
-  if (cFile) triggerDownload(await cFile.arrayBuffer(), 'ItemDefs.db.original_bak');
-  if (sFile) triggerDownload(await sFile.arrayBuffer(), 'Raptor.Game.db.original_bak');
+$('nextBtn').onclick = async () => {
+  if (!readyFiles) return;
+  if (nextStep === 'backup') {
+    const cFile = $('clientFile').files[0];
+    const sFile = $('serverFile').files[0];
+    if (cFile) triggerDownload(await cFile.arrayBuffer(), 'ItemDefs.db.original_bak');
+    if (sFile) triggerDownload(await sFile.arrayBuffer(), 'Raptor.Game.db.original_bak');
+    nextStep = 'download';
+  } else {
+    triggerDownload(readyFiles.client, 'ItemDefs.db');
+    triggerDownload(readyFiles.server, 'Raptor.Game.db');
+    nextStep = 'done';
+  }
+  showNextStep();
+};
+
+$('skipBackupBtn').onclick = () => {
+  nextStep = 'download';
+  showNextStep();
 };
 
 // ==========================================
@@ -865,10 +969,13 @@ function applyIfChanged(world, key, input, convert = v => v) {
 
 const formatRate = v => v == null ? 'not set' : `${v}x`;
 
+wireDrop($('worldSlot'), $('worldFile'));
+
 $('worldFile').onchange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
   currentWorldFileName = file.name;
+  showAttached($('worldSlot'), { files: [file] }, 'worldsettings.json');
   try {
     const text = await file.text();
     currentWorldJson = JSON.parse(text);
@@ -877,25 +984,23 @@ $('worldFile').onchange = async (e) => {
     setRateFromFile($('wXpRate'), currentWorldJson.XpRate);
     setRateFromFile($('wGatherRate'), currentWorldJson.GatherRate);
     setRateFromFile($('wLootRate'), currentWorldJson.LootRate);
-    
+
     setSelectFromFile($('wDifficulty'), currentWorldJson.Difficulty);
     setSelectFromFile($('wDeathPenalty'), currentWorldJson.DeathPenalty);
     setSelectFromFile($('wPvP'), currentWorldJson.PvPEnabled);
 
-    $('worldEditorArea').style.opacity = '1';
-    $('worldEditorArea').style.pointerEvents = 'auto';
+    $('worldEditorArea').disabled = false;
 
-    worldLog(`[LOADED] World Name: "${currentWorldJson.Name || currentWorldJson.DisplayName}"\n` +
-      `Current Settings:\n` +
+    worldLog(`World loaded: ${currentWorldJson.Name || currentWorldJson.DisplayName}\n` +
       `  - XP Rate: ${formatRate(currentWorldJson.XpRate)}\n` +
       `  - Gathering Rate: ${formatRate(currentWorldJson.GatherRate)}\n` +
       `  - Loot Rate: ${formatRate(currentWorldJson.LootRate)}\n` +
       `  - Difficulty: ${currentWorldJson.Difficulty ?? 'not set'}\n` +
       `  - Death Penalty: ${currentWorldJson.DeathPenalty ?? 'not set'}\n` +
-      `  - PvP: ${currentWorldJson.PvPEnabled ?? 'not set'}\n\n` +
-      `You can now edit any of the settings above and click 'Download Updated worldsettings.json'.`);
+      `  - PvP: ${currentWorldJson.PvPEnabled ?? 'not set'}\n` +
+      `Only the terms you change will be saved.`);
   } catch(err) {
-    worldLog(`[ERROR] Failed to parse worldsettings.json: ${err.message}`);
+    worldLog(`That file couldn't be read as world settings. Check you chose worldsettings.json.\n${err.message}`);
   }
 };
 
@@ -920,10 +1025,14 @@ $('saveWorldBtn').onclick = () => {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 15000);
 
-  worldLog(`[SAVED] Downloaded updated ${currentWorldFileName}!\n` +
-    `Replace this file in your world's folder: Documents\\My Games\\Everlast\\Worlds\\<WorldName>\\worldsettings.json\n` +
-    `Next time you enter the world, your new rates & difficulty will be active!`);
+  worldLog(`Sealed. ${currentWorldFileName} is in your downloads.\n` +
+    `Replace the file in Documents\\My Games\\Everlast\\Worlds\\<WorldName>\\ and your new terms apply the next time you enter the world.`);
 };
+
+syncAmendments();
+drawPack();
+checkReady();
+loadEngine();
 </script>
 </body>
 </html>
