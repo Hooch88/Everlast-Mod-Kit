@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Everlast: Undying Tale — QoL & Balance Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --card-bg: #121824;
+      --card-border: #1e2838;
+      --primary-gold: #e5b958;
+      --gold-gradient: linear-gradient(135deg, #e5b958 0%, #c49638 100%);
+      --accent-blue: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --success: #34d399;
+      --danger: #f87171;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      padding: 30px 20px;
+      line-height: 1.5;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(180deg, #182234 0%, #121824 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px 30px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      color: var(--primary-gold);
+      letter-spacing: 0.5px;
+    }
+
+    header p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+
+    .badge {
+      background: rgba(229, 185, 88, 0.12);
+      color: var(--primary-gold);
+      border: 1px solid rgba(229, 185, 88, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* NAVIGATION TABS */
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #1f2a3c;
+      padding-bottom: 8px;
+    }
+
+    .nav-tab {
+      background: #141b27;
+      color: var(--text-muted);
+      border: 1px solid #233044;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-tab.active {
+      background: var(--gold-gradient);
+      color: #0b0f19;
+      border-color: transparent;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .card-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      color: #0b0f19;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    h2 { font-size: 18px; font-weight: 600; color: #fff; }
+
+    /* FILE INPUTS */
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .file-drop {
+      border: 1px dashed #334155;
+      background: #0f141f;
+      padding: 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .file-drop:hover { border-color: var(--primary-gold); }
+
+    .file-drop label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .path-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+
+    input[type="file"] { width: 100%; font-size: 12px; color: var(--text-muted); }
+
+    /* CONTROLS */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .option-group {
+      background: #0e131d;
+      border: 1px solid #1a2230;
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .group-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-gold);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      cursor: pointer;
+    }
+    .checkbox-row:last-child { margin-bottom: 0; }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-gold);
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .label-text { font-size: 14px; font-weight: 500; color: #fff; }
+    .sub-text { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .number-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    input[type="number"], input[type="text"], select {
+      background: #161c28;
+      border: 1px solid #2e3a4e;
+      color: #fff;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-weight: 500;
+      font-size: 13.5px;
+    }
+
+    input[type="number"] { width: 85px; text-align: right; }
+    select { width: 160px; }
+
+    /* BUTTONS */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-gold {
+      background: var(--gold-gradient);
+      color: #0b0f19;
+      border: none;
+    }
+    .btn-gold:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: #1b2332;
+      color: #cbd5e1;
+      border-color: #334155;
+    }
+    .btn-secondary:hover:not(:disabled) { background: #242f42; color: #fff; }
+
+    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+    /* CONSOLE LOG */
+    pre {
+      background: #080b10;
+      border: 1px solid #161e2b;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Consolas', monospace;
+      font-size: 12.5px;
+      color: #94a3b8;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      margin-top: 8px;
+    }
+    .status-ok { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+    .status-warn { background: rgba(229, 185, 88, 0.15); color: var(--primary-gold); }
+    .status-err { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <h1>Everlast: Undying Tale</h1>
+      <p>Quality of Life, Stacking &amp; World Server Suite · No-Install</p>
+    </div>
+    <div class="badge">v2.2 · Patch 1389+ Ready</div>
+  </header>
+
+  <!-- NAVIGATION -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('databases')">Database Tweaks (Stacking &amp; Curse)</button>
+    <button class="nav-tab" onclick="switchTab('worlds')">World &amp; Server Settings (Rates &amp; Difficulty)</button>
+  </div>
+
+  <!-- TAB 1: DATABASES -->
+  <div id="tab-databases" class="tab-content active">
+
+    <!-- STEP 1: LOAD DATABASES -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-num">1</div>
+        <h2>Load Game Databases</h2>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted);">
+        Select the client and server databases from your Steam game directory.
+      </p>
+
+      <div class="file-grid">
+        <div class="file-drop">
+          <label>Client Database (ItemDefs.db)</label>
+          <div class="path-hint">Everlast\Assets\Database\Definitions\ItemDefs.db</div>
+          <input type="file" id="clientFile" accept=".db">
+        </div>
+        <div class="file-drop">
+          <label>Server Database (Raptor.Game.db)</label>
+          <div class="path-hint">Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db</div>
+          <input type="file" id="serverFile" accept=".db">
+        </div>
+      </div>
+
+      <div class="btn-row" style="align-items: center;">
+        <button id="engineBtn" class="btn-secondary">Load SQLite Engine</button>
+        <span id="engineStatus" class="status-pill status-warn">Engine not loaded (Requires Internet for sql.js)</span>
+      </div>
+    </section>
+
+    <!-- STEP 2: CUSTOMIZE -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-num">2</div>
+        <h2>Customize Balance &amp; Stacking</h2>
+      </div>
+
+      <div class="options-grid">
+        <!-- CURSE REMOVAL -->
+        <div class="option-group">
+          <div class="group-title">Curse Management</div>
+          
+          <label class="checkbox-row">
+            <input type="checkbox" id="noGatherCurse" checked>
+            <div>
+              <div class="label-text">Zero Gathering &amp; Mining Curse</div>
+              <div class="sub-text">Removes the +5 to +12 curse when chopping trees, mining ore, and picking plants.</div>
+            </div>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="noCombatCurse" checked>
+            <div>
+              <div class="label-text">Zero Combat &amp; Attack Curse</div>
+              <div class="sub-text">Removes curse gain from 125 weapons, spells, abilities, and dodges.</div>
+            </div>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="noStealCurse" checked>
+            <div>
+              <div class="label-text">Zero Thievery Curse</div>
+              <div class="sub-text">Removes +4 curse tax when picking up world items or stealing food.</div>
+            </div>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="noCraftCurse" checked>
+            <div>
+              <div class="label-text">Zero Crafting Curse</div>
+              <div class="sub-text">Removes curse gained when crafting items.</div>
+            </div>
+          </label>
+
+          <div class="number-row">
+            <div>
+              <div class="label-text">Totem Cleansing Multiplier</div>
+              <div class="sub-text">Buffs negative curse on Fragile/Stable/Robust totems.</div>
+            </div>
+            <input type="number" id="totemMult" min="1" max="10" step="0.5" value="1.0">
+          </div>
+        </div>
+
+        <!-- INVENTORY STACKING -->
+        <div class="option-group">
+          <div class="group-title">Inventory Stacking</div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="stackNewItems" checked>
+            <div>
+              <div class="label-text">Stack Food, Potions &amp; Tools</div>
+              <div class="sub-text">Enables stacking for cooked meals, potions, moulds, and unstrung bows.</div>
+            </div>
+          </label>
+
+          <div class="number-row">
+            <div>
+              <div class="label-text">New Stacking Size</div>
+              <div class="sub-text">Max stack for items enabled above.</div>
+            </div>
+            <input type="number" id="newStackSize" min="2" max="999" value="100">
+          </div>
+
+          <label class="checkbox-row" style="margin-top: 14px;">
+            <input type="checkbox" id="upgradeResources" checked>
+            <div>
+              <div class="label-text">Increase Resource Stacks</div>
+              <div class="sub-text">Increases vanilla 5-stack items (Ores, Bars, Milk, Logs, Fish).</div>
+            </div>
+          </label>
+
+          <div class="number-row">
+            <div>
+              <div class="label-text">Resource Stack Size</div>
+              <div class="sub-text">Default vanilla was 5.</div>
+            </div>
+            <input type="number" id="resourceStackSize" min="5" max="999" value="100">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: PREVIEW & DOWNLOAD -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-num">3</div>
+        <h2>Preview &amp; Apply</h2>
+      </div>
+
+      <div class="btn-row">
+        <button id="previewBtn" class="btn-secondary" disabled>Preview Changes</button>
+        <button id="applyBtn" class="btn-gold" disabled>Prepare Modified Databases</button>
+        <button id="downloadBtn" class="btn-secondary" disabled>Download Modified Files</button>
+        <button id="backupBtn" class="btn-secondary" disabled>Download Original Backups</button>
+      </div>
+
+      <pre id="logArea">Ready. Select both database files and load the SQLite engine to begin.</pre>
+    </section>
+
+  </div>
+
+  <!-- TAB 2: WORLD SETTINGS -->
+  <div id="tab-worlds" class="tab-content">
+    <section class="card">
+      <div class="card-header">
+        <div class="card-num">&#9874;</div>
+        <h2>Unlock World Server Rates &amp; Difficulty</h2>
+      </div>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">
+        The game locks these settings after world creation, but your local server reads them from <code style="color:var(--primary-gold);">worldsettings.json</code>. Browse for your world's settings file to freely unlock and customize your XP, Gathering, Loot rates, and Difficulty!
+      </p>
+
+      <div class="file-drop" style="margin-bottom: 20px;">
+        <label>Select your World Settings File (worldsettings.json)</label>
+        <div class="path-hint">Documents\My Games\Everlast\Worlds\&lt;YourWorldName&gt;\worldsettings.json</div>
+        <input type="file" id="worldFile" accept=".json">
+      </div>
+
+      <div id="worldEditorArea" style="opacity: 0.4; pointer-events: none; transition: all 0.2s;">
+        <div class="options-grid">
+          
+          <!-- MULTIPLIERS -->
+          <div class="option-group">
+            <div class="group-title">Gameplay Rates &amp; Multipliers</div>
+            
+            <div class="number-row" style="border:none; margin:0; padding:0 0 10px 0;">
+              <div>
+                <div class="label-text">XP Rate Multiplier</div>
+                <div class="sub-text">Multiplier for all combat, gathering &amp; craft XP.</div>
+              </div>
+              <input type="number" id="wXpRate" min="0.1" max="100" step="0.5" value="3">
+            </div>
+
+            <div class="number-row">
+              <div>
+                <div class="label-text">Gathering Rate Multiplier</div>
+                <div class="sub-text">Resources gathered per node/tree/rock.</div>
+              </div>
+              <input type="number" id="wGatherRate" min="0.1" max="100" step="0.5" value="3">
+            </div>
+
+            <div class="number-row">
+              <div>
+                <div class="label-text">Loot Rate Multiplier</div>
+                <div class="sub-text">Item quantity dropped from chests/mobs.</div>
+              </div>
+              <input type="number" id="wLootRate" min="0.1" max="100" step="0.5" value="3">
+            </div>
+          </div>
+
+          <!-- RULES & DIFFICULTY -->
+          <div class="option-group">
+            <div class="group-title">Rules &amp; Penalties</div>
+
+            <div class="number-row" style="border:none; margin:0; padding:0 0 10px 0;">
+              <div>
+                <div class="label-text">Difficulty</div>
+                <div class="sub-text">World difficulty preset.</div>
+              </div>
+              <select id="wDifficulty">
+                <option value="Hylic" selected>Hylic (Relaxed / Casual)</option>
+                <option value="Psychic">Psychic (Standard)</option>
+                <option value="Pneumonic">Pneumonic (Hard)</option>
+                <option value="Pyrrhic">Pyrrhic (Expert)</option>
+                <option value="Sufferer">Sufferer (Nightmare)</option>
+                <option value="OneShot">OneShot (Permadeath)</option>
+              </select>
+            </div>
+
+            <div class="number-row">
+              <div>
+                <div class="label-text">Death Penalty</div>
+                <div class="sub-text">What happens when your character dies.</div>
+              </div>
+              <select id="wDeathPenalty">
+                <option value="KeepInventory">Keep Inventory (Never Drop Items)</option>
+                <option value="DeathContainer" selected>Death Container (Standard Drop)</option>
+                <option value="AllCarriedToAdon">All Carried to Adon (Lost on Death)</option>
+                <option value="DestroyAllCarried">Destroy All Carried (Items Deleted)</option>
+              </select>
+            </div>
+
+            <div class="number-row">
+              <div>
+                <div class="label-text">PvP Enabled</div>
+                <div class="sub-text">Allow damage between players.</div>
+              </div>
+              <select id="wPvP">
+                <option value="true" selected>Enabled</option>
+                <option value="false">Disabled</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="btn-row" style="margin-top: 24px;">
+          <button id="saveWorldBtn" class="btn-gold">Download Updated worldsettings.json</button>
+        </div>
+      </div>
+
+      <pre id="worldLogArea" style="margin-top: 18px;">Select your worldsettings.json above to load your world's settings.</pre>
+    </section>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+let SQL = null;
+let readyFiles = null;
+let currentWorldJson = null;
+let currentWorldFileName = "worldsettings.json";
+
+const $ = id => document.getElementById(id);
+
+function switchTab(tabId) {
+  document.querySelectorAll('.nav-tab').forEach((t, i) => {
+    t.classList.toggle('active', (tabId === 'databases' && i === 0) || (tabId === 'worlds' && i === 1));
+  });
+  $('tab-databases').classList.toggle('active', tabId === 'databases');
+  $('tab-worlds').classList.toggle('active', tabId === 'worlds');
+}
+
+function log(msg) { $('logArea').textContent = msg; }
+function worldLog(msg) { $('worldLogArea').textContent = msg; }
+
+function checkReady() {
+  const ok = !!SQL && $('clientFile').files.length === 1 && $('serverFile').files.length === 1;
+  $('previewBtn').disabled = !ok;
+  $('applyBtn').disabled = !ok;
+  $('backupBtn').disabled = !ok;
+  $('downloadBtn').disabled = !readyFiles;
+}
+
+['clientFile', 'serverFile'].forEach(id => {
+  $(id).onchange = () => { readyFiles = null; checkReady(); };
+});
+
+// Load sql.js
+$('engineBtn').onclick = async () => {
+  $('engineBtn').disabled = true;
+  for (let base of ['https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/', 'https://unpkg.com/sql.js@1.13.0/dist/']) {
+    try {
+      await new Promise((resolve, reject) => {
+        let s = document.createElement('script');
+        s.src = base + 'sql-wasm.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+      SQL = await initSqlJs({ locateFile: file => base + file });
+      $('engineStatus').textContent = 'SQLite Engine Ready (Local Wasm)';
+      $('engineStatus').className = 'status-pill status-ok';
+      checkReady();
+      return;
+    } catch(e) { console.warn(e); }
+  }
+  $('engineStatus').textContent = 'Failed to load SQLite. Check internet.';
+  $('engineStatus').className = 'status-pill status-err';
+  $('engineBtn').disabled = false;
+};
+
+// Database Helpers
+function fetchRows(db, query, params=[]) {
+  const stmt = db.prepare(query);
+  try {
+    stmt.bind(params);
+    const res = [];
+    while (stmt.step()) res.push(stmt.getAsObject());
+    return res;
+  } finally { stmt.free(); }
+}
+
+const EXCLUDED_COMPONENTS = ['EquippableComponent', 'PouchComponent', 'YarnDialogueComponent', 'ImageDisplayComponent'];
+function isEligibleForStack(r) {
+  const name = String(r.Name || '').toLowerCase();
+  const comp = String(r.Components || '');
+  return ![0, 32].includes(Number(r.Categories)) &&
+         !name.includes('full helm') &&
+         !['quest', 'key to', 'quest item'].some(k => name.includes(k)) &&
+         !EXCLUDED_COMPONENTS.some(ex => comp.includes(ex));
+}
+
+const TOTEM_BASES = {
+  'Fragile Totem': -15,
+  'Stable Totem': -30,
+  'Robust Totem': -45,
+  'Mighty Totem': -60
+};
+
+function processDb(db, options, isServer) {
+  const stats = { stackChanged: 0, curseChanged: 0, totemsBuffed: 0 };
+
+  // 1. STACKING & TOTEMS in ItemDefs
+  if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='ItemDefs'").length > 0) {
+    const items = fetchRows(db, "SELECT Id, Name, Categories, Stackable, MaxStackSize, Components FROM ItemDefs");
+    const upd = db.prepare("UPDATE ItemDefs SET Stackable = ?, MaxStackSize = ?, Components = ? WHERE Id = ?");
+
+    for (const item of items) {
+      let st = Number(item.Stackable);
+      let max = Number(item.MaxStackSize);
+      let cmp = item.Components;
+      let touched = false;
+
+      // Stacking
+      if (isEligibleForStack(item)) {
+        if (options.upgradeResources && st === 1 && [5, 20, 40].includes(max)) {
+          max = options.resourceStackSize;
+          touched = true;
+        } else if (options.stackNewItems && (st === 0 || max <= 1 || [10, 40].includes(max))) {
+          st = 1;
+          max = options.newStackSize;
+          touched = true;
+        }
+      }
+
+      // Totems
+      if (options.totemMult > 1.0 && TOTEM_BASES[item.Name]) {
+        try {
+          const parsed = JSON.parse(cmp);
+          let found = false;
+          for (let c of parsed) {
+            if (c.$type === 'ConsumableComponent' && typeof c.CurseGain === 'number' && c.CurseGain < 0) {
+              c.CurseGain = Math.round(TOTEM_BASES[item.Name] * options.totemMult);
+              found = true;
+            }
+          }
+          if (found) {
+            cmp = JSON.stringify(parsed);
+            stats.totemsBuffed++;
+            touched = true;
+          }
+        } catch(e) {}
+      }
+
+      if (touched) {
+        upd.run([st, max, cmp, item.Id]);
+        stats.stackChanged++;
+      }
+    }
+    upd.free();
+  }
+
+  // 2. CURSE REMOVAL in AbilityDefs (Combat)
+  if (options.noCombatCurse && fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='AbilityDefs'").length > 0) {
+    const ab = fetchRows(db, "SELECT COUNT(*) as cnt FROM AbilityDefs WHERE CurseGainOnUse != 0");
+    if (ab[0].cnt > 0) {
+      db.run("UPDATE AbilityDefs SET CurseGainOnUse = 0 WHERE CurseGainOnUse != 0");
+      stats.curseChanged += ab[0].cnt;
+    }
+  }
+
+  // 3. CURSE REMOVAL in ComponentSetDefs (Gathering / Mining / Stealing)
+  if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='ComponentSetDefs'").length > 0) {
+    const compRows = fetchRows(db, "SELECT Id, Components FROM ComponentSetDefs WHERE Components LIKE '%CurseGainOn%'");
+    const updComp = db.prepare("UPDATE ComponentSetDefs SET Components = ? WHERE Id = ?");
+
+    for (const row of compRows) {
+      let c = row.Components;
+      if (options.noGatherCurse) {
+        c = c.replace(/"CurseGainOnSuccess"\s*:\s*[0-9]+/g, '"CurseGainOnSuccess": 0');
+      }
+      if (options.noStealCurse) {
+        c = c.replace(/"CurseGainOnCollect"\s*:\s*[0-9]+/g, '"CurseGainOnCollect": 0');
+      }
+      if (options.noCraftCurse) {
+        c = c.replace(/"CurseGainOnCraft"\s*:\s*[0-9]+/g, '"CurseGainOnCraft": 0');
+      }
+
+      if (c !== row.Components) {
+        updComp.run([c, row.Id]);
+        stats.curseChanged++;
+      }
+    }
+    updComp.free();
+  }
+
+  return stats;
+}
+
+async function runMod(isPreview) {
+  const options = {
+    noGatherCurse: $('noGatherCurse').checked,
+    noCombatCurse: $('noCombatCurse').checked,
+    noStealCurse: $('noStealCurse').checked,
+    noCraftCurse: $('noCraftCurse').checked,
+    totemMult: Number($('totemMult').value),
+    stackNewItems: $('stackNewItems').checked,
+    newStackSize: Number($('newStackSize').value),
+    upgradeResources: $('upgradeResources').checked,
+    resourceStackSize: Number($('resourceStackSize').value)
+  };
+
+  log('Processing databases in browser memory…');
+  const dbs = [];
+
+  try {
+    const clientFile = $('clientFile').files[0];
+    const serverFile = $('serverFile').files[0];
+
+    const clientDb = new SQL.Database(new Uint8Array(await clientFile.arrayBuffer()));
+    const serverDb = new SQL.Database(new Uint8Array(await serverFile.arrayBuffer()));
+    dbs.push(clientDb, serverDb);
+
+    clientDb.run('BEGIN');
+    const cStats = processDb(clientDb, options, false);
+    clientDb.run('COMMIT');
+
+    serverDb.run('BEGIN');
+    const sStats = processDb(serverDb, options, true);
+    serverDb.run('COMMIT');
+
+    // Verify integrity
+    const cCheck = fetchRows(clientDb, 'PRAGMA integrity_check')[0].integrity_check;
+    const sCheck = fetchRows(serverDb, 'PRAGMA integrity_check')[0].integrity_check;
+
+    if (cCheck !== 'ok' || sCheck !== 'ok') {
+      throw new Error(`Integrity check failed: Client=${cCheck}, Server=${sCheck}`);
+    }
+
+    let report = `[SUCCESS] SQLite Integrity: 100% OK on both files!\n\n` +
+      `CLIENT (ItemDefs.db):\n` +
+      `  - Stacking definitions changed: ${cStats.stackChanged}\n` +
+      `  - Curse triggers zeroed: ${cStats.curseChanged}\n` +
+      `  - Totems buffed: ${cStats.totemsBuffed}\n\n` +
+      `SERVER (Raptor.Game.db):\n` +
+      `  - Stacking definitions changed: ${sStats.stackChanged}\n` +
+      `  - Curse triggers zeroed: ${sStats.curseChanged}\n` +
+      `  - Totems buffed: ${sStats.totemsBuffed}\n\n` +
+      (isPreview ? 
+        `[PREVIEW MODE] No files altered. Click 'Prepare Modified Databases' when ready to export.` :
+        `[EXPORT READY] Click 'Download Modified Files' and place them into your game folder.`);
+
+    log(report);
+
+    if (!isPreview) {
+      readyFiles = {
+        client: clientDb.export(),
+        server: serverDb.export()
+      };
+    } else {
+      readyFiles = null;
+    }
+    checkReady();
+
+  } catch(e) {
+    log(`[ERROR]: ${e.message}\n${e.stack}`);
+  } finally {
+    dbs.forEach(d => d.close());
+  }
+}
+
+$('previewBtn').onclick = () => runMod(true);
+$('applyBtn').onclick = () => runMod(false);
+
+function triggerDownload(bytes, filename) {
+  const blob = new Blob([bytes], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+}
+
+$('downloadBtn').onclick = () => {
+  if (!readyFiles) return;
+  triggerDownload(readyFiles.client, 'ItemDefs.db');
+  triggerDownload(readyFiles.server, 'Raptor.Game.db');
+};
+
+$('backupBtn').onclick = async () => {
+  const cFile = $('clientFile').files[0];
+  const sFile = $('serverFile').files[0];
+  if (cFile) triggerDownload(await cFile.arrayBuffer(), 'ItemDefs.db.original_bak');
+  if (sFile) triggerDownload(await sFile.arrayBuffer(), 'Raptor.Game.db.original_bak');
+};
+
+// ==========================================
+// WORLD SETTINGS TAB LOGIC
+// ==========================================
+// Show the file's value even if it's missing or not in the list, and remember it
+// so saving only writes this setting when the user actually changes it.
+function setSelectFromFile(select, value) {
+  select.querySelectorAll('option[data-from-file]').forEach(o => o.remove());
+  const loaded = String(value ?? '');
+  if (![...select.options].some(o => o.value === loaded)) {
+    const opt = new Option(loaded ? `${loaded} (from your file)` : 'Keep as is (not set in file)', loaded);
+    opt.dataset.fromFile = 'true';
+    select.add(opt);
+  }
+  select.value = loaded;
+  select.dataset.loaded = loaded;
+}
+
+function setRateFromFile(input, value) {
+  input.placeholder = 'Not set';
+  input.value = value ?? '';
+  input.dataset.loaded = input.value;
+}
+
+function applyIfChanged(world, key, input, convert = v => v) {
+  if (input.value !== '' && input.value !== input.dataset.loaded) world[key] = convert(input.value);
+}
+
+const formatRate = v => v == null ? 'not set' : `${v}x`;
+
+$('worldFile').onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  currentWorldFileName = file.name;
+  try {
+    const text = await file.text();
+    currentWorldJson = JSON.parse(text);
+
+    // Populate UI fields
+    setRateFromFile($('wXpRate'), currentWorldJson.XpRate);
+    setRateFromFile($('wGatherRate'), currentWorldJson.GatherRate);
+    setRateFromFile($('wLootRate'), currentWorldJson.LootRate);
+    
+    setSelectFromFile($('wDifficulty'), currentWorldJson.Difficulty);
+    setSelectFromFile($('wDeathPenalty'), currentWorldJson.DeathPenalty);
+    setSelectFromFile($('wPvP'), currentWorldJson.PvPEnabled);
+
+    $('worldEditorArea').style.opacity = '1';
+    $('worldEditorArea').style.pointerEvents = 'auto';
+
+    worldLog(`[LOADED] World Name: "${currentWorldJson.Name || currentWorldJson.DisplayName}"\n` +
+      `Current Settings:\n` +
+      `  - XP Rate: ${formatRate(currentWorldJson.XpRate)}\n` +
+      `  - Gathering Rate: ${formatRate(currentWorldJson.GatherRate)}\n` +
+      `  - Loot Rate: ${formatRate(currentWorldJson.LootRate)}\n` +
+      `  - Difficulty: ${currentWorldJson.Difficulty ?? 'not set'}\n` +
+      `  - Death Penalty: ${currentWorldJson.DeathPenalty ?? 'not set'}\n` +
+      `  - PvP: ${currentWorldJson.PvPEnabled ?? 'not set'}\n\n` +
+      `You can now edit any of the settings above and click 'Download Updated worldsettings.json'.`);
+  } catch(err) {
+    worldLog(`[ERROR] Failed to parse worldsettings.json: ${err.message}`);
+  }
+};
+
+$('saveWorldBtn').onclick = () => {
+  if (!currentWorldJson) return;
+  const updatedWorld = { ...currentWorldJson };
+  applyIfChanged(updatedWorld, 'XpRate', $('wXpRate'), Number);
+  applyIfChanged(updatedWorld, 'GatherRate', $('wGatherRate'), Number);
+  applyIfChanged(updatedWorld, 'LootRate', $('wLootRate'), Number);
+  applyIfChanged(updatedWorld, 'Difficulty', $('wDifficulty'));
+  applyIfChanged(updatedWorld, 'DeathPenalty', $('wDeathPenalty'));
+  applyIfChanged(updatedWorld, 'PvPEnabled', $('wPvP'), v => v === 'true');
+
+  const updatedStr = JSON.stringify(updatedWorld, null, 2);
+  const blob = new Blob([updatedStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = currentWorldFileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+
+  worldLog(`[SAVED] Downloaded updated ${currentWorldFileName}!\n` +
+    `Replace this file in your world's folder: Documents\\My Games\\Everlast\\Worlds\\<WorldName>\\worldsettings.json\n` +
+    `Next time you enter the world, your new rates & difficulty will be active!`);
+};
+</script>
+</body>
+</html>
