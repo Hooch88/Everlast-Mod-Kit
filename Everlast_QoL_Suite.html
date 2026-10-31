@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The Fine Print: Everlast Mod Tool</title>
+  <title>Everlast Mod Kit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=IM+Fell+English:ital@0;1&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -41,6 +41,7 @@
     .masthead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 20px; }
     .wordmark { font: 700 34px/1.1 var(--display); }
     .masthead p:not(.wordmark) { color: var(--mist-2); font-size: 15px; }
+    .patch { background: var(--parchment); color: var(--wax); font-size: 16px; padding: 1px 7px; margin: 0 2px; }
 
     /* BOOKMARKS */
     .bookmarks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: -28px; position: relative; }
@@ -153,10 +154,7 @@
     .exhibit figcaption { font-size: 19px; }
     .count { display: flex; flex-wrap: wrap; gap: 2px 12px; align-items: baseline; font: 17px var(--body); }
     .count strong { font: 700 44px/1 var(--display); color: var(--death-ink); font-variant-numeric: tabular-nums; }
-    .packs { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; }
-    .packs small { display: block; margin-top: 6px; font: 15px var(--body); color: var(--ink-2); }
-    .pack-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; }
-    .pack-grid.pouch { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .pack-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; max-width: 420px; }
     .pack-grid i { aspect-ratio: 1; border: 1px solid var(--ink-2); opacity: .45; }
     .pack-grid i.on { background: var(--death-ink); border-color: var(--death-ink); opacity: 1; }
     .pack-try { display: grid; gap: 2px; font: 16px var(--body); }
@@ -197,7 +195,10 @@
     .tally th:first-child, .tally td:first-child { text-align: left; padding-left: 0; }
     .tally th { font-weight: 700; border-bottom: 1px solid var(--ink-2); }
     .remark { font: 30px/1 var(--hand); color: var(--death-ink); }
-    .next { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+    .actions { display: grid; gap: 14px; padding-left: 22px; font: 700 17px var(--body); }
+    .actions[hidden] { display: none; }
+    .actions li { padding-left: 4px; }
+    .actions .plain { margin-top: 6px; font-weight: 400; }
     .btn {
       all: unset;
       cursor: pointer;
@@ -206,10 +207,9 @@
       font: 700 17px var(--body);
       padding: 10px 18px;
     }
+    .btn.secondary { background: transparent; color: var(--wax); box-shadow: inset 0 0 0 2px var(--wax); }
     .btn:hover { filter: brightness(1.15); }
-    .btn:focus-visible, .link:focus-visible { outline: 2px solid var(--death-ink); outline-offset: 2px; }
-    .link { all: unset; cursor: pointer; text-decoration: underline; font: 16px var(--body); color: var(--ink-2); }
-    .link[hidden] { display: none; }
+    .btn:focus-visible { outline: 2px solid var(--death-ink); outline-offset: 2px; }
     .steps { display: grid; gap: 8px; font: 16px/1.35 var(--body); padding-left: 22px; }
     .steps code { font: 14px Consolas, monospace; overflow-wrap: anywhere; }
     .error { font: 16px/1.35 var(--body); color: var(--warn); }
@@ -237,8 +237,6 @@
 
     @media (max-width: 600px) {
       .slots { grid-template-columns: minmax(0, 1fr); }
-      .packs { grid-template-columns: minmax(0, 1fr); }
-      .pack-grid.pouch { width: 50%; }
       .bookmark { font-size: 17px; padding-inline: 12px; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -252,10 +250,10 @@
 
   <header class="masthead">
     <div>
-      <p class="wordmark">The Fine Print</p>
+      <p class="wordmark">Everlast Mod Kit</p>
       <p>Unofficial mod tool for Everlast: Undying Tale</p>
     </div>
-    <p>Built for game patch 1389 and later</p>
+    <p>Built for game patch <b class="patch">1389</b> and later</p>
   </header>
 
   <div class="bookmarks" role="tablist">
@@ -266,8 +264,8 @@
   <!-- THE CONTRACT -->
   <div id="tab-databases" class="tab-content active">
     <main class="sheet">
-      <h1>Terms of Your Resurrection</h1>
-      <p class="sub">Amendments, requested by the undersigned</p>
+      <h1>Your Game, Your Terms</h1>
+      <p class="sub">Cross out the rules you don’t want, and get new game files to use instead.</p>
 
       <section class="section">
         <h2>Before you sign</h2>
@@ -280,16 +278,17 @@
       <section class="section">
         <h2>Attachments</h2>
         <p class="plain">Open your Steam game folder and drag each file onto its box. You can also click a box to choose the file.</p>
+        <p class="plain">Your paths may start with <code>Program Files (x86)\Steam</code> instead of <code>SteamLibrary</code>. To jump to the folder, right-click Everlast in Steam and choose Manage, then Browse local files.</p>
         <div class="slots">
           <label class="slot" id="clientSlot">
             <b>Item file</b>
-            <span class="slot-path">Everlast\Assets\Database\Definitions\ItemDefs.db</span>
+            <span class="slot-path">SteamLibrary\<wbr>steamapps\<wbr>common\<wbr>Everlast\<wbr>Assets\<wbr>Database\<wbr>Definitions\<wbr>ItemDefs.db</span>
             <span class="slot-state">Drop ItemDefs.db here</span>
             <input type="file" id="clientFile" accept=".db">
           </label>
           <label class="slot" id="serverSlot">
             <b>Server file</b>
-            <span class="slot-path">Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db</span>
+            <span class="slot-path">SteamLibrary\<wbr>steamapps\<wbr>common\<wbr>Everlast\<wbr>Everlast_Data\<wbr>StreamingAssets\<wbr>Server\<wbr>Windows\<wbr>Raptor.Data\<wbr>Raptor.Game.db</span>
             <span class="slot-state">Drop Raptor.Game.db here</span>
             <input type="file" id="serverFile" accept=".db">
           </label>
@@ -363,12 +362,10 @@
         </div>
 
         <figure class="exhibit">
-          <figcaption>Exhibit A: what &sect;7 does to your pack</figcaption>
+          <figcaption>Exhibit A: an example of what &sect;7 does</figcaption>
           <p class="count"><strong id="slots">2</strong><span>of 30 backpack slots used by 150 ore</span></p>
-          <div class="packs" aria-hidden="true">
-            <div><div class="pack-grid" id="packGrid"></div><small>Backpack</small></div>
-            <div><div class="pack-grid pouch" id="pouchGrid"></div><small>Pouch slots, up to 5 more</small></div>
-          </div>
+          <div class="pack-grid" id="packGrid" aria-hidden="true"></div>
+          <p class="plain">Ore is just an example. &sect;7 changes every resource listed above.</p>
           <label class="pack-try">Try a stack size
             <input type="range" id="packRange" min="5" max="200" value="100">
           </label>
@@ -384,20 +381,27 @@
 
       <section class="receipt" id="receipt" hidden>
         <h2>Receipt</h2>
-        <p class="plain">Both files passed their health check. Your originals have not been touched.</p>
+        <p class="plain" id="noChanges" hidden>Nothing changed. These files already have these changes, most likely from an earlier run, so there is nothing new to download. To use different numbers, put your original files back first, using your <code>.original_bak</code> backups or by verifying the game files in Steam. Then add them here again.</p>
+        <p class="plain" id="receiptIntro">Your changes are ready, but nothing is saved yet. They only exist in this page until you download the files below. Your game still has its original files.</p>
         <table class="tally">
           <thead><tr><th>Change</th><th>Item file</th><th>Server file</th></tr></thead>
           <tbody id="tallyBody"></tbody>
         </table>
         <p class="remark" id="remark"></p>
-        <div class="next">
-          <button class="btn" id="nextBtn"></button>
-          <button class="link" id="skipBackupBtn">I already have backups</button>
-        </div>
-        <p class="plain" id="nextHint"></p>
+        <ol class="actions" id="receiptActions">
+          <li>
+            <button class="btn secondary" id="backupBtn">Save my original files</button>
+            <p class="plain">Keep these somewhere safe. They are how you undo this. Skip this if you already have backups.</p>
+          </li>
+          <li>
+            <button class="btn" id="downloadBtn">Download my modded files</button>
+            <p class="plain">This saves your changes as two new files. Your browser may ask permission to download both.</p>
+          </li>
+        </ol>
+        <p class="plain" id="deliveryIntro" hidden>Your modded files are in your downloads. The game won't use them until you move them into your game folder:</p>
         <ol class="steps" id="deliverySteps" hidden>
-          <li>Put the new <code>ItemDefs.db</code> in <code>Everlast\Assets\Database\Definitions\</code>, replacing the old one.</li>
-          <li>Put the new <code>Raptor.Game.db</code> in <code>Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\</code>, replacing the old one.</li>
+          <li>Put the new <code>ItemDefs.db</code> in <code>SteamLibrary\<wbr>steamapps\<wbr>common\<wbr>Everlast\<wbr>Assets\<wbr>Database\<wbr>Definitions\</code>, replacing the old one.</li>
+          <li>Put the new <code>Raptor.Game.db</code> in <code>SteamLibrary\<wbr>steamapps\<wbr>common\<wbr>Everlast\<wbr>Everlast_Data\<wbr>StreamingAssets\<wbr>Server\<wbr>Windows\<wbr>Raptor.Data\</code>, replacing the old one.</li>
           <li>Back up your Worlds folder, then try the changes on cheap items first.</li>
           <li>To undo, rename your <code>.original_bak</code> files back to their original names and swap them in. Verifying the game files in Steam should also restore them.</li>
           <li>If the game updates, it may replace these files. Come back and sign again.</li>
@@ -507,7 +511,6 @@ let SQL = null;
 let engineFailed = false;
 let readyFiles = null;
 let readyStats = null;
-let nextStep = 'backup';
 let currentWorldJson = null;
 let currentWorldFileName = "worldsettings.json";
 
@@ -588,7 +591,6 @@ function clampClauseNumber(input) {
 
 // Exhibit A
 for (let i = 0; i < 30; i++) $('packGrid').appendChild(document.createElement('i'));
-for (let i = 0; i < 5; i++) $('pouchGrid').appendChild(document.createElement('i'));
 
 function drawPack() {
   const on = $('upgradeResources').checked;
@@ -874,21 +876,17 @@ function showReceipt() {
   }));
   const total = rows.reduce((sum, [, c, s]) => sum + c + s, 0);
   $('remark').textContent = closingRemark(total);
-  nextStep = 'backup';
-  showNextStep();
-  $('receipt').hidden = false;
-}
 
-function showNextStep() {
-  const steps = {
-    backup: ['Save my original files', 'Keep these somewhere safe. They are how you undo this.'],
-    download: ['Download my modded files', 'Your browser may ask permission to download two files.'],
-    done: ['Download again', 'Now move the two files into your game folder:']
-  };
-  $('nextBtn').textContent = steps[nextStep][0];
-  $('nextHint').textContent = steps[nextStep][1];
-  $('skipBackupBtn').hidden = nextStep !== 'backup';
-  $('deliverySteps').hidden = nextStep !== 'done';
+  // Files that are already modded match nothing, so there is nothing worth downloading.
+  const nothingChanged = total === 0;
+  $('noChanges').hidden = !nothingChanged;
+  ['receiptIntro', 'remark', 'receiptActions'].forEach(id => { $(id).hidden = nothingChanged; });
+  $('backupBtn').textContent = 'Save my original files';
+  $('downloadBtn').textContent = 'Download my modded files';
+  $('deliveryIntro').hidden = true;
+  $('deliverySteps').hidden = true;
+  $('receipt').hidden = false;
+  return total;
 }
 
 function triggerDownload(bytes, filename) {
@@ -916,28 +914,27 @@ $('seal').onclick = async () => {
   seal.classList.add('done');
   seal.textContent = 'Sealed';
   $('signNote').innerHTML = '<b>Signed.</b> Change any term above to sign again.';
-  showReceipt();
-};
-
-$('nextBtn').onclick = async () => {
-  if (!readyFiles) return;
-  if (nextStep === 'backup') {
-    const cFile = $('clientFile').files[0];
-    const sFile = $('serverFile').files[0];
-    if (cFile) triggerDownload(await cFile.arrayBuffer(), 'ItemDefs.db.original_bak');
-    if (sFile) triggerDownload(await sFile.arrayBuffer(), 'Raptor.Game.db.original_bak');
-    nextStep = 'download';
-  } else {
-    triggerDownload(readyFiles.client, 'ItemDefs.db');
-    triggerDownload(readyFiles.server, 'Raptor.Game.db');
-    nextStep = 'done';
+  if (showReceipt() === 0) {
+    seal.textContent = 'No changes';
+    $('signNote').textContent = 'Nothing to change in these files. See the note below.';
   }
-  showNextStep();
 };
 
-$('skipBackupBtn').onclick = () => {
-  nextStep = 'download';
-  showNextStep();
+$('backupBtn').onclick = () => {
+  const cFile = $('clientFile').files[0];
+  const sFile = $('serverFile').files[0];
+  if (cFile) triggerDownload(cFile, 'ItemDefs.db.original_bak');
+  if (sFile) triggerDownload(sFile, 'Raptor.Game.db.original_bak');
+  $('backupBtn').textContent = 'Save my original files again';
+};
+
+$('downloadBtn').onclick = () => {
+  if (!readyFiles) return;
+  triggerDownload(readyFiles.client, 'ItemDefs.db');
+  triggerDownload(readyFiles.server, 'Raptor.Game.db');
+  $('downloadBtn').textContent = 'Download my modded files again';
+  $('deliveryIntro').hidden = false;
+  $('deliverySteps').hidden = false;
 };
 
 // ==========================================
