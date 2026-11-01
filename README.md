@@ -1,6 +1,6 @@
 # Everlast Mod Kit
 
-A free, no-install mod tool for **Everlast: Undying Tale**. It's a single web page that lets you remove curse sources, raise stack sizes and change your world's rates and difficulty.
+A free, no-install mod tool for **Everlast: Undying Tale**. It's a single web page that lets you remove curse sources, raise stack sizes, speed up crafting, strengthen ichor and totems, and change your world's rates and difficulty.
 
 There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 
@@ -11,9 +11,13 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 **The Contract** (curse and stacking)
 
 - Remove curse from gathering, combat, picking up or stealing items, and crafting
-- Make totems clear more curse
+- Make totems and ichor clear more curse, and shorten the Feeling Full wait after using them
+- Speed up normal crafting (Focused Craft minigames stay the same)
+- Make peddlers pay the full General Store rate when you sell to them
 - Let meals, potions, moulds and unstrung bows stack
 - Raise stack sizes for ores, bars, milk, logs and fish
+
+![The ichor, Feeling Full, crafting and peddler settings](screenshots/settings.png)
 
 **World Rider** (one world's settings)
 
@@ -46,7 +50,7 @@ If you don't see the save button, you'll get **Download my modded files** instea
 
 ## Undoing a change
 
-Add your files to the page again, untick the term and save. You don't need a backup.
+Add your files to the page again, untick the term or set the number back to its original value, then save. You don't need a backup.
 
 To put everything back exactly as the game shipped it, use Steam: right-click Everlast and choose Properties, then Installed Files, then Verify integrity of game files.
 
@@ -55,6 +59,7 @@ To put everything back exactly as the game shipped it, use Steam: right-click Ev
 - This is an unofficial tool, made for solo and private worlds.
 - Built for game patch 1389. A game update may replace these files, so come back and apply your changes again.
 - Back up your Worlds folder and try your changes on a test world first.
+- Ichor and totems only clear curse when you use them on yourself. Sacrificing them at a shrine doesn't clear curse.
 - Saving directly needs Chrome or Edge. Other browsers use the download instead. Your browser may also refuse to save into a Steam library inside `Program Files`, and the download works there too.
 
 ## Credits
