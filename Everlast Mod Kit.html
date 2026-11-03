@@ -357,6 +357,12 @@
               <span>seconds.</span>
             </div>
             <p class="plain">The wait before you can use another ichor or totem. Food keeps its usual wait.</p>
+            <div class="rate-row">
+              <span>Ichor and Totems shall grant</span>
+              <input class="ink-num" type="number" id="occultXpMult" min="1" max="10" step="0.5" value="1.0" aria-label="Ichor and totem XP multiplier">
+              <span>times their usual Occultism XP.</span>
+            </div>
+            <p class="plain">Multiplies the Occultism XP gained when using, purifying, or sacrificing ichor and totems at shrines and altars. 1 leaves it as it is.</p>
           </div>
         </div>
 
@@ -554,7 +560,7 @@ let readyStats = null;
 let loadedTerms = null;
 const fileHandles = {};
 const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources'];
-const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'craftSpeed'];
+const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'occultXpMult', 'craftSpeed'];
 const STACK_TERMS = [['stackNewItems', 'newStackSize', 'newStackAmend', 'newSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
 let currentWorldJson = null;
 let currentWorldFileName = "worldsettings.json";
@@ -870,6 +876,22 @@ const CLEANSERS = [
 ];
 
 const FEELING_FULL = 54;
+
+const ICHOR_TOTEM_BASE_XP = {
+  148: { "Consume": 5 },
+  149: { "Consume": 10 },
+  150: { "Consume": 20 },
+  151: { "Consume": 40 },
+  1081: { "Purify": 5, "Absorb Power": 7 },
+  1082: { "Purify": 10, "Absorb Power": 15 },
+  1083: { "Purify": 20, "Absorb Power": 30 },
+  1084: { "Purify": 40, "Absorb Power": 60 }
+};
+const SHRINE_BASE_MULT = {
+  "Domaanziin Shrine": 2.0,
+  "Occultic Shrine": 2.25
+};
+
 const PEDDLER_SHOP = 30;
 const PEDDLER_PAY = 50;
 const GENERAL_STORE_PAY = 100;
@@ -905,6 +927,10 @@ function readTerms(db) {
           if (use) terms[cleanser.mult] = Math.round(use.CurseGain / cleanser.bases[item.Name] * 2) / 2;
           const full = use?.ConditionsToApply?.find(a => a.ConditionId === FEELING_FULL);
           if (full) terms.fullWait = full.Stacks;
+          const xp = use?.XpRewards?.find(x => x.Skill === 6);
+          if (xp && ICHOR_TOTEM_BASE_XP[item.Id]?.[use.UsageVerb || 'Consume']) {
+            terms.occultXpMult = Math.round(xp.Exp / ICHOR_TOTEM_BASE_XP[item.Id][use.UsageVerb || 'Consume'] * 2) / 2;
+          }
         } catch(e) {}
       }
     }
@@ -1009,6 +1035,30 @@ function processDb(db, options, isServer) {
             if (waited) stats.fullWaitChanged++;
             touched = true;
           }
+
+          // Ichor and Totem XP Buff
+          if (options.changedRates.includes('occultXpMult')) {
+            let xpFound = false;
+            for (let c of parsed) {
+              if (c.$type === 'ConsumableComponent' && Array.isArray(c.XpRewards)) {
+                const verb = c.UsageVerb || c.Name || 'Consume';
+                const baseVal = ICHOR_TOTEM_BASE_XP[item.Id]?.[verb];
+                if (baseVal !== undefined) {
+                  for (let reward of c.XpRewards) {
+                    if (reward.Skill === 6) {
+                      reward.Exp = Math.round(baseVal * options.occultXpMult);
+                      xpFound = true;
+                    }
+                  }
+                }
+              }
+            }
+            if (xpFound) {
+              cmp = JSON.stringify(parsed);
+              stats.occultXpChanged = (stats.occultXpChanged || 0) + 1;
+              touched = true;
+            }
+          }
         } catch(e) {}
       }
 
@@ -1055,6 +1105,29 @@ function processDb(db, options, isServer) {
       }
     }
 
+    // 3.5. OCCULTIC SHRINE MULTIPLIER
+    if (options.changedRates.includes('occultXpMult')) {
+      const shrineRow = fetchRows(db, "SELECT Components FROM ComponentSetDefs WHERE Id = 150")[0];
+      if (shrineRow) {
+        try {
+          const comps = JSON.parse(shrineRow.Components);
+          let shModified = false;
+          for (let sc of comps) {
+            if (sc.$type === 'OcculticShrineComponent') {
+              const baseMult = SHRINE_BASE_MULT[sc.ShrineName] || 2.0;
+              sc.OccultismXpMultiplier = baseMult * options.occultXpMult;
+              sc.OccultismChargeMultiplier = baseMult * options.occultXpMult;
+              shModified = true;
+            }
+          }
+          if (shModified) {
+            updComp.run([JSON.stringify(comps), 150]);
+            stats.shrineXpChanged = (stats.shrineXpChanged || 0) + 1;
+          }
+        } catch(e) {}
+      }
+    }
+
     // 4. CRAFTING SPEED, always worked out from the game's own times
     if (options.changedRates.includes('craftSpeed')) {
       for (const [id, times] of Object.entries(VANILLA.craftTimes)) {
@@ -1089,6 +1162,7 @@ async function runMod() {
     noStealCurse: $('noStealCurse').checked,
     noCraftCurse: $('noCraftCurse').checked,
     totemMult: Number($('totemMult').value),
+    occultXpMult: Number($('occultXpMult').value),
     ichorMult: Number($('ichorMult').value),
     fullWait: Number($('fullWait').value),
     craftSpeed: Number($('craftSpeed').value),
