@@ -57,7 +57,7 @@ To put everything back exactly as the game shipped it, use Steam: right-click Ev
 ## Good to know
 
 - This is an unofficial tool, made for solo and private worlds.
-- Built for game patch 1389. A game update may replace these files, so come back and apply your changes again.
+- Built for game patch 1464 (v0.13005.0) and later. A game update may replace these files, so come back and apply your changes again.
 - Back up your Worlds folder and try your changes on a test world first.
 - Ichor and totems only clear curse when you use them on yourself. Sacrificing them at a shrine doesn't clear curse.
 - Saving directly needs Chrome or Edge. Other browsers use the download instead. Your browser may also refuse to save into a Steam library inside `Program Files`, and the download works there too.
