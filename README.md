@@ -24,7 +24,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **Fair Peddlers:** Make peddlers pay the full General Store rate when you sell to them.
 - **Item Stacking:** Let meals, potions, moulds, unstrung bows, and resource items stack to 100.
 
-![The updated contract and all mod settings](screenshots/settings.png)
+![The ichor, Feeling Full, crafting and peddler settings](screenshots/settings.png)
 
 **World Rider** (one world's settings)
 
