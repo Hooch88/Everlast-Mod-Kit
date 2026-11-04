@@ -83,4 +83,4 @@ For modders, developers, and technical details on schemas, exact byte offsets, I
 
 ## Credits
 
-Based on Everlast Tweaker by StoneAndTimber. Stacking, curse, estate, and batch crafting improvements by Hooch.
+Credit to StoneAndTimber for inspiration to flesh this mod out.
