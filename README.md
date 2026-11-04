@@ -14,7 +14,9 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 
 - **Free Estate Building:** Build and upgrade estate plots, house styles, and decor without material requirements (`ItemsForUpgrade` waived).
 - **Unlimited Estate Points & Progression:** Bypasses progression locks and provides 100 Estate Points so you can construct your full estate immediately.
+- **Bank Box Withdrawals:** Allows pulling and withdrawing items out of Bank Boxes (drag or left-click) just like a full Bank.
 - **Craft Many Batch Limit (200 Max):** Boosts the "Craft Many" slider ceiling up to 200 items in a single batch (vanilla slider capped at 30).
+- **Mob Spawn & Respawn Timers:** Scale monster and pack respawn delays (e.g. 2x faster respawns).
 - **Curse Removal:** Remove curse from gathering, combat, picking up or stealing items, and crafting.
 - **Totem & Ichor Cleansing:** Make totems and ichor clear more curse, and shorten the Feeling Full wait after using them.
 - **Progression & EXP Boosts:** 10x progression rewards on Desolate Zones & drop-offs, plus 3x sacrifice/purification EXP at altars and shrines.
@@ -48,11 +50,14 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 
 1. **Open the page:** Double-click `Everlast Mod Kit.html` in Chrome or Edge.
 2. **Close Everlast**, including its local server.
-3. **Add your game files:** Drag these two files onto their boxes on the page:
+3. **Add your game database files:** Drag these two files onto their boxes on the page:
    - `Assets\Database\Definitions\ItemDefs.db`
    - `Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db`
 4. **Pick your changes:** Tick a term to strike it out, or untick one to put it back.
-5. **Click Sign and seal**, then **Save to my game folder**.
+5. **Click Sign and seal**, then **Save to my game folder** (saves database changes like stacking, curses, free materials, craft speeds, and mob respawns).
+6. **(Optional / After Steam Updates) Patch Executables:**
+   - **What it does:** Features like **100 Estate Points (§10)**, **Craft Many 200 (§11)**, and **Bank Box Withdrawals (§12)** are stored in compiled code files (`GameAssembly.dll`, `Raptor.Game.exe`, `global-metadata.dat`), not database tables.
+   - **When to use:** Whenever Steam updates Everlast or verifies files, Steam resets those files to vanilla. Click the **"Patch Game Executables"** button on the receipt and select your main `Everlast` folder to instantly re-apply (or restore) code patches without needing Python.
 
 ---
 
