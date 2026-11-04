@@ -479,6 +479,10 @@
             <button class="btn" id="downloadBtn">Download my modded files</button>
             <p class="plain">This saves your changes as two new files. Your browser may ask permission to download both.</p>
           </li>
+          <li id="binaryPatchStep">
+            <button class="btn secondary" id="patchFolderBtn">Patch Game Folder Binaries (&sect;10 Estate Points, &sect;11 Craft Many, &sect;12 Bank Boxes)</button>
+            <p class="plain" id="patchFolderNote">Select your <code>Everlast</code> game folder to apply or restore the binary patches on <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code> directly from your browser.</p>
+          </li>
         </ol>
         <p class="plain" id="deliveryIntro" hidden>Your modded files are in your downloads. The game won't use them until you move them into your game folder:</p>
         <ol class="steps" id="deliverySteps" hidden>
@@ -1005,6 +1009,18 @@ function readTerms(db) {
     terms.fairPeddler = fetchRows(db, "SELECT SellMultiplier FROM ShopDefs WHERE Id = ?", [PEDDLER_SHOP])[0]?.SellMultiplier === GENERAL_STORE_PAY;
   }
 
+  if (hasTable('EstatePlotDefs')) {
+    const plotRows = fetchRows(db, "SELECT Variants FROM EstatePlotDefs WHERE Variants LIKE '%ItemsForUpgrade%'");
+    terms.freeEstate = !plotRows.some(r => /"ItemsForUpgrade"\s*:\s*\[\s*\{/.test(r.Variants));
+  }
+
+  if (hasTable('NpcGroupDefs')) {
+    const grp = fetchRows(db, "SELECT RespawnTimeMs FROM NpcGroupDefs WHERE Id = 1")[0];
+    if (grp && grp.RespawnTimeMs > 0) {
+      terms.mobRespawnSpeed = Math.round((90000 / Number(grp.RespawnTimeMs)) * 4) / 4;
+    }
+  }
+
   return terms;
 }
 
@@ -1217,12 +1233,13 @@ function processDb(db, options, isServer) {
 
   // 6. MOB RESPAWN SPEED in NpcDefs & NpcGroupDefs
   if (options.changedRates.includes('mobRespawnSpeed') && options.mobRespawnSpeed > 0) {
+    const factor = (loadedTerms?.mobRespawnSpeed || 1) / options.mobRespawnSpeed;
     if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='NpcDefs'").length > 0) {
-      db.run("UPDATE NpcDefs SET DespawnedTime = MAX(200, CAST(ROUND(DespawnedTime / ?) AS INTEGER)) WHERE DespawnedTime > 0", [options.mobRespawnSpeed]);
+      db.run("UPDATE NpcDefs SET DespawnedTime = MAX(200, CAST(ROUND(DespawnedTime * ?) AS INTEGER)) WHERE DespawnedTime > 0", [factor]);
       stats.mobRespawnChanged = (stats.mobRespawnChanged || 0) + db.getRowsModified();
     }
     if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='NpcGroupDefs'").length > 0) {
-      db.run("UPDATE NpcGroupDefs SET RespawnTimeMs = MAX(1000, CAST(ROUND(RespawnTimeMs / ?) AS INTEGER)) WHERE RespawnTimeMs > 0", [options.mobRespawnSpeed]);
+      db.run("UPDATE NpcGroupDefs SET RespawnTimeMs = MAX(1000, CAST(ROUND(RespawnTimeMs * ?) AS INTEGER)), RespawnTimeMaxMs = CASE WHEN RespawnTimeMaxMs > 0 THEN MAX(1000, CAST(ROUND(RespawnTimeMaxMs * ?) AS INTEGER)) ELSE 0 END WHERE RespawnTimeMs > 0", [factor, factor]);
       stats.mobRespawnChanged = (stats.mobRespawnChanged || 0) + db.getRowsModified();
     }
   }
@@ -1408,6 +1425,81 @@ $('downloadBtn').onclick = () => {
   $('downloadBtn').textContent = 'Download my modded files again';
   $('deliveryIntro').hidden = false;
   $('deliverySteps').hidden = false;
+};
+
+async function getNestedFileHandle(dirHandle, relPath, create = false) {
+  const parts = relPath.split('/');
+  let cur = dirHandle;
+  for (let i = 0; i < parts.length - 1; i++) {
+    cur = await cur.getDirectoryHandle(parts[i], { create });
+  }
+  return await cur.getFileHandle(parts[parts.length - 1], { create });
+}
+
+async function readOrBackupBytes(dirHandle, relPath) {
+  const fileHandle = await getNestedFileHandle(dirHandle, relPath, false);
+  let bakHandle;
+  try {
+    bakHandle = await getNestedFileHandle(dirHandle, relPath + '.original_bak', false);
+  } catch (e) {
+    const origBytes = new Uint8Array(await (await fileHandle.getFile()).arrayBuffer());
+    bakHandle = await getNestedFileHandle(dirHandle, relPath + '.original_bak', true);
+    const w = await bakHandle.createWritable();
+    await w.write(origBytes);
+    await w.close();
+  }
+  const cleanBytes = new Uint8Array(await (await bakHandle.getFile()).arrayBuffer());
+  return { fileHandle, bytes: new Uint8Array(cleanBytes) };
+}
+
+$('patchFolderBtn').onclick = async () => {
+  const note = $('patchFolderNote');
+  if (!window.showDirectoryPicker) {
+    note.textContent = 'Your browser does not support folder access. Run everlast_stack_mod.py instead.';
+    return;
+  }
+  try {
+    const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    note.textContent = 'Patching binaries in ' + dirHandle.name + '...';
+
+    // 1. GameAssembly.dll (Client Estate Points + Bank Box Withdrawals)
+    const dll = await readOrBackupBytes(dirHandle, 'GameAssembly.dll');
+    if ($('freeEstate').checked) {
+      dll.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x23a2230); // CalculateEstatePoints -> 100
+      dll.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x23a29c0); // CalculateMaxEstatePoints -> 100
+      dll.bytes.set([0x49, 0xc7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0xc0, 0xc3], 0x23a2de0); // IsPlotLockedByProgression -> false
+    }
+    if ($('bankBoxWithdraw').checked) {
+      dll.bytes.set([0xc6, 0x83, 0x00, 0x01, 0x00, 0x00, 0x01], 0x1bda84e); // ShowBankBox AllowWithdraw = true
+      dll.bytes.set([0xeb, 0x7f, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90], 0x1bd1cf5); // OnClick -> RequestWithdrawal
+    }
+    let w = await dll.fileHandle.createWritable();
+    await w.write(dll.bytes);
+    await w.close();
+
+    // 2. Raptor.Game.exe (Server Estate Points + Progression Unlock)
+    const srv = await readOrBackupBytes(dirHandle, 'Everlast_Data/StreamingAssets/Server/Windows/Raptor.Game.exe');
+    if ($('freeEstate').checked) {
+      srv.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x173cc40); // Server CalculateEstatePoints -> 100
+      srv.bytes.set([0x31, 0xc0, 0x49, 0x89, 0x00, 0x49, 0x89, 0x40, 0x08, 0x49, 0x89, 0x40, 0x10, 0x49, 0x89, 0x40, 0x18, 0x49, 0x89, 0x40, 0x20, 0xff, 0xc0, 0xc3], 0x173f260); // Server TryCheckProgression -> true
+    }
+    w = await srv.fileHandle.createWritable();
+    await w.write(srv.bytes);
+    await w.close();
+
+    // 3. global-metadata.dat (Craft Many slider limit)
+    const meta = await readOrBackupBytes(dirHandle, 'Everlast_Data/il2cpp_data/Metadata/global-metadata.dat');
+    meta.bytes[0x105f1ca] = $('craftMany').checked ? 200 : 60;
+    w = await meta.fileHandle.createWritable();
+    await w.write(meta.bytes);
+    await w.close();
+
+    note.innerHTML = '<b>Done!</b> Patched <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code> (with <code>.original_bak</code> backups).';
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      note.textContent = 'Could not patch binaries (make sure Everlast is closed and you picked the main Everlast folder): ' + err.message;
+    }
+  }
 };
 
 // ==========================================
