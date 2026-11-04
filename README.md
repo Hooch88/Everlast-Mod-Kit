@@ -61,19 +61,26 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 
 ### Option B: Web Tool (`Everlast Mod Kit.html`)
 
-1. **Open the page:** Double-click `Everlast Mod Kit.html` in Chrome or Edge.
-2. **Close Everlast**, including its local server.
-3. **Add your game database files:** Drag these two files onto their boxes on the page:
-   - `Assets\Database\Definitions\ItemDefs.db`
-   - `Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db`
-4. **Pick your changes:** Tick a term to strike it out, or untick one to put it back.
-5. **Click Sign and seal**, then **Save to my game folder** (saves database changes like stacking, curses, free materials, craft speeds, and mob respawns).
-6. **(Optional) Patch Executables (§10 Estate Points, §11 Craft Many, §12 Bank Boxes, §14 Crafting Rarity):**
-   - **Why this step is needed:** Features like **100 Estate Points (§10)**, **Craft Many 200 (§11)**, **Bank Box Withdrawals (§12)**, and **Crafting Quality Rarity (§14)** live in compiled code files (`GameAssembly.dll`, `Raptor.Game.exe`, `global-metadata.dat`), not `.db` database tables. Modern web browsers block web pages from directly editing `.dll` and `.exe` files for security.
-   - **How to apply (takes 2 seconds, no software to install):**
-     - **Option 1 (Instant Clipboard):** Click **Copy Executable Patch Command** on the page. Press **Win + X** &rarr; open **Terminal** (or **PowerShell**), press **Ctrl + V**, and hit **Enter**. It automatically auto-detects your Steam Everlast folder, creates `.original_bak` backups, and patches the files in milliseconds!
-     - **Option 2 (Batch File):** Or click **Download PATCH_EVERLAST.bat** and double-click it to run anytime.
-   - **When to use:** Whenever you toggle §10, §11, §12, or §14, or after Steam updates Everlast / verifies game files.
+Double-click `Everlast Mod Kit.html` in your browser. The tool is organized into three dedicated tabs:
+
+1. **Game Executables Tab (Zero Uploads Required!):**
+   - Head straight to the **Game Executables** tab if you want to customize **Crafting Quality Rarity Chances (§14)**, **100 Estate Points (§10)**, **Craft Many 200 Limit (§11)**, or **Bank Box Withdrawals (§12)**.
+   - Adjust the sliders (or pick presets like *100% Masterwork*, *High-Roller*, or *Balanced RPG*).
+   - Click **Copy 1-Click PowerShell Command** (press **Win + X** &rarr; open **Terminal / PowerShell** &rarr; paste and Enter), or click **Download PATCH_EVERLAST.bat** and double-click it.
+   - Automatically finds your Steam installation, creates `.original_bak` backups, and patches your binaries in under a second!
+
+2. **The Contract Tab (Database Rules):**
+   - Close Everlast.
+   - Drop or click to add your two database files:
+     - `Assets\Database\Definitions\ItemDefs.db`
+     - `Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db`
+   - Select your desired changes (curse removals, 500x item stack sizes, fair peddlers, totem potency, respawn speeds).
+   - Click **Sign and seal**, then **Save to my game folder** (or download modded files).
+
+3. **World Rider Tab (World Rules):**
+   - Drag or pick `worldsettings.json` from `Documents\My Games\Everlast\Worlds\<YourWorld>\`.
+   - Adjust XP, gathering, loot rates, difficulty, and death penalties (e.g. Keep Inventory).
+   - Click **Seal this world**.
 
 ---
 
