@@ -693,7 +693,7 @@ let readyFiles = null;
 let readyStats = null;
 let loadedTerms = null;
 const fileHandles = {};
-const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources', 'freeEstate', 'craftMany', 'bankBoxWithdraw'];
+const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources', 'freeEstate', 'craftMany', 'bankBoxWithdraw', 'customQuality'];
 const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'occultXpMult', 'craftSpeed', 'mobRespawnSpeed'];
 const STACK_TERMS = [['stackNewItems', 'newStackSize', 'newStackAmend', 'newSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
 let currentWorldJson = null;
@@ -729,7 +729,10 @@ function countChanges() {
   if (!loadedTerms) return 0;
   const terms = TERM_BOXES.filter(id => $(id).checked !== loadedTerms[id]).length;
   const sizes = STACK_TERMS.filter(([box, num, , size]) => $(box).checked && loadedTerms[box] && Number($(num).value) !== loadedTerms[size]).length;
-  return terms + sizes + RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]).length;
+  const rates = RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]).length;
+  const qTiers = ['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'];
+  const qualitySlidersChanged = $('customQuality') && $('customQuality').checked && qTiers.some(t => Number($('q' + t).value) !== Number($('q' + t).defaultValue));
+  return terms + sizes + rates + (qualitySlidersChanged && !terms ? 1 : 0);
 }
 
 function checkReady() {
@@ -1045,7 +1048,7 @@ function mostCommon(values) {
 // What a file says right now. A true term means it is already struck in this file.
 function readTerms(db) {
   const hasTable = name => fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name=?", [name]).length > 0;
-  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, bankBoxWithdraw: true, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, occultXpMult: 1, craftSpeed: 1, mobRespawnSpeed: 1, newSize: null, resourceSize: null };
+  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, bankBoxWithdraw: true, customQuality: false, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, occultXpMult: 1, craftSpeed: 1, mobRespawnSpeed: 1, newSize: null, resourceSize: null };
   const changed = { resources: [], unstacked: [] };
 
   if (hasTable('ItemDefs')) {
@@ -1354,6 +1357,7 @@ async function runMod() {
     freeEstate: $('freeEstate').checked,
     craftMany: $('craftMany').checked,
     bankBoxWithdraw: $('bankBoxWithdraw').checked,
+    customQuality: $('customQuality').checked,
     changedRates: RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]),
     stackNewItems: $('stackNewItems').checked,
     newStackSize: Number($('newStackSize').value),
@@ -1423,7 +1427,8 @@ function showReceipt() {
     ['Crafting recipes changed', client.craftChanged, server.craftChanged],
     ['Peddler prices changed', client.peddlerChanged, server.peddlerChanged],
     ['Estate building costs waived', client.estateChanged || 0, server.estateChanged || 0],
-    ['Mob respawn timers adjusted', client.mobRespawnChanged || 0, server.mobRespawnChanged || 0]
+    ['Mob respawn timers adjusted', client.mobRespawnChanged || 0, server.mobRespawnChanged || 0],
+    ['Crafting rarity rates customized', $('customQuality').checked ? 1 : 0, $('customQuality').checked ? 1 : 0]
   ];
   $('tallyBody').replaceChildren(...rows.map(cells => {
     const tr = document.createElement('tr');
@@ -1759,8 +1764,8 @@ function updateQualityTotal() {
   const inp = $('q' + tier);
   const rng = $('q' + tier + 'Range');
   if (inp && rng) {
-    inp.oninput = () => { rng.value = inp.value; updateQualityTotal(); checkReady(); };
-    rng.oninput = () => { inp.value = rng.value; updateQualityTotal(); checkReady(); };
+    inp.oninput = () => { rng.value = inp.value; updateQualityTotal(); invalidateSeal(); };
+    rng.oninput = () => { inp.value = rng.value; updateQualityTotal(); invalidateSeal(); };
   }
 });
 
@@ -1770,14 +1775,15 @@ function setQualityPreset(mw, fl, su, fi, no) {
     if ($('q' + tier)) $('q' + tier).value = v;
     if ($('q' + tier + 'Range')) $('q' + tier + 'Range').value = v;
   }
+  if ($('customQuality')) $('customQuality').checked = true;
   updateQualityTotal();
-  checkReady();
+  invalidateSeal();
 }
 
 if ($('presetGod')) $('presetGod').onclick = () => setQualityPreset(100, 0, 0, 0, 0);
 if ($('presetHigh')) $('presetHigh').onclick = () => setQualityPreset(20, 30, 25, 15, 10);
 if ($('presetVanilla')) $('presetVanilla').onclick = () => setQualityPreset(1, 4, 15, 30, 50);
-if ($('customQuality')) $('customQuality').onchange = () => { checkReady(); };
+if ($('customQuality')) $('customQuality').onchange = () => { invalidateSeal(); };
 updateQualityTotal();
 
 </script>
