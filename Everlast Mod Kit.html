@@ -1650,6 +1650,12 @@ function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
   const t_fi = Math.min(100, Math.max(0, t_su + Math.round(pFine)));
 
   const code = [
+    // Focused Craft guard: if craftType in esi > 1 (minigame), return 0 immediately
+    0x83, 0xfe, 0x01,
+    0x76, 0x03,
+    0x31, 0xc0,
+    0xc3,
+    // Lemire RNG for auto/bulk crafting (craftType <= 1):
     0x0f, 0x31,
     0x69, 0xc0, 0x05, 0x84, 0x08, 0x08,
     0xff, 0xc0,
