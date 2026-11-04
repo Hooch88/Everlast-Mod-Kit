@@ -115,7 +115,13 @@
   - `.rdata`: RVA `0x4117000`, Raw `0x4115c00`, Size `0x5558a00`
   - `.data`: RVA `0x9670000`, Raw `0x966e600`, Size `0x718600`
   - `.pdata`: RVA `0x9f9c000`, Raw `0x9d86c00`, Size `0x45fa00` (382,151 12-byte function boundary entries)
-- **Key Server Functions:**
+- **Key Server Functions & Patches:**
   - `MsgItemHandler.Dispatch`: VA `0x1418ee320` (FileOff `0x18ed720`)
     - `Withdraw` case: VA `0x1418ee585` (FileOff `0x18ed985`) -> calls `0x1417f0ce0`, `0x14169a410`, and `ItemManager.Withdraw` (`0x1417589a0`).
     - `Deposit` case: VA `0x1418ee702` (FileOff `0x18edb02`) -> calls the exact same `0x1417f0ce0` and `0x14169a410` checks, then `ItemManager.Deposit` (`0x141756080`). Because the server checks are identical for Deposit and Withdraw, client-side Bank Box withdrawal patches work without needing a server binary patch.
+  - `MsgEstateHandler.Dispatch`: VA `0x1417ecd80` (FileOff `0x17ec180`) -> dispatches estate upgrade requests to `EstateManager` (`0x1417391c0` -> `StartUpgradePreparation` at `0x14173b120` -> `CanUpgradePlot` at `0x141739ce0`).
+
+| Server Method / Patch Target | File Offset | Virtual Address | Original Bytes | Patched Bytes | Patch Purpose |
+|---|---|---|---|---|---|
+| `EstateManager.CalculateEstatePoints` | `0x173cc40` | `0x14173d840` | `57 56 55 53 48 81` | `b8 64 00 00 00 c3` | `mov eax, 100; ret` -> Server always calculates 100 available Estate Points in `CanUpgradePlot` (`0x14173a1c5`). |
+| `EstateProgression.TryCheckProgression` | `0x173f260` | `0x14173fe60` | `41 57 41 56 41 55 ...` (24B) | `31 c0 49 89 00 49 89 40 08 49 89 40 10 49 89 40 18 49 89 40 20 ff c0 c3` | Zeroes out `out LocalizedString lockedReason` (`[r8..r8+0x20]`) and returns `eax = 1` (`true`, not locked by progression). |
