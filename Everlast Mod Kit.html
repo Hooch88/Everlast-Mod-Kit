@@ -1543,7 +1543,7 @@ async function readOrBackupBytes(dirHandle, relPath) {
   return { fileHandle, bytes: new Uint8Array(cleanBytes) };
 }
 
-$('function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
+function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
   const t_mw = Math.min(100, Math.max(0, Math.round(pMasterwork)));
   const t_fl = Math.min(100, Math.max(0, t_mw + Math.round(pFlawless)));
   const t_su = Math.min(100, Math.max(0, t_fl + Math.round(pSuperior)));
