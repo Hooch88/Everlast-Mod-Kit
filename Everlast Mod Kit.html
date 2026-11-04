@@ -429,6 +429,26 @@
             <p class="plain">Strike this to boost the batch crafting slider up to 200 items in global-metadata.dat.</p>
           </div>
         </div>
+
+        <div class="clause">
+          <span class="num">&sect;12</span>
+          <div>
+            <label class="term"><input type="checkbox" id="bankBoxWithdraw"><span class="box"></span><s>Bank Boxes only accept deposits and refuse withdrawals.</s><span class="hand">open access</span></label>
+            <p class="plain">Strike this so Bank Boxes allow pulling items out just like a full Bank (applied by everlast_stack_mod.py).</p>
+          </div>
+        </div>
+
+        <div class="clause open">
+          <span class="num">&sect;13</span>
+          <div>
+            <div class="rate-row">
+              <span>Monsters and NPCs shall respawn at</span>
+              <input class="ink-num" type="number" id="mobRespawnSpeed" min="0.25" max="10" step="0.25" value="1.0" aria-label="Monster respawn speed multiplier">
+              <span>times their usual speed.</span>
+            </div>
+            <p class="plain">Scales NpcDefs.DespawnedTime and NpcGroupDefs.RespawnTimeMs. 2 makes mobs respawn twice as fast; 0.5 makes them take twice as long.</p>
+          </div>
+        </div>
       </section>
 
       <section class="sign">
@@ -578,8 +598,8 @@ let readyFiles = null;
 let readyStats = null;
 let loadedTerms = null;
 const fileHandles = {};
-const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources', 'freeEstate', 'craftMany'];
-const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'occultXpMult', 'craftSpeed'];
+const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources', 'freeEstate', 'craftMany', 'bankBoxWithdraw'];
+const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'occultXpMult', 'craftSpeed', 'mobRespawnSpeed'];
 const STACK_TERMS = [['stackNewItems', 'newStackSize', 'newStackAmend', 'newSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
 let currentWorldJson = null;
 let currentWorldFileName = "worldsettings.json";
@@ -930,7 +950,7 @@ function mostCommon(values) {
 // What a file says right now. A true term means it is already struck in this file.
 function readTerms(db) {
   const hasTable = name => fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name=?", [name]).length > 0;
-  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, craftSpeed: 1, newSize: null, resourceSize: null };
+  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, bankBoxWithdraw: true, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, occultXpMult: 1, craftSpeed: 1, mobRespawnSpeed: 1, newSize: null, resourceSize: null };
   const changed = { resources: [], unstacked: [] };
 
   if (hasTable('ItemDefs')) {
@@ -1195,6 +1215,18 @@ function processDb(db, options, isServer) {
     stats.peddlerChanged += db.getRowsModified();
   }
 
+  // 6. MOB RESPAWN SPEED in NpcDefs & NpcGroupDefs
+  if (options.changedRates.includes('mobRespawnSpeed') && options.mobRespawnSpeed > 0) {
+    if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='NpcDefs'").length > 0) {
+      db.run("UPDATE NpcDefs SET DespawnedTime = MAX(200, CAST(ROUND(DespawnedTime / ?) AS INTEGER)) WHERE DespawnedTime > 0", [options.mobRespawnSpeed]);
+      stats.mobRespawnChanged = (stats.mobRespawnChanged || 0) + db.getRowsModified();
+    }
+    if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='NpcGroupDefs'").length > 0) {
+      db.run("UPDATE NpcGroupDefs SET RespawnTimeMs = MAX(1000, CAST(ROUND(RespawnTimeMs / ?) AS INTEGER)) WHERE RespawnTimeMs > 0", [options.mobRespawnSpeed]);
+      stats.mobRespawnChanged = (stats.mobRespawnChanged || 0) + db.getRowsModified();
+    }
+  }
+
   return stats;
 }
 
@@ -1209,9 +1241,11 @@ async function runMod() {
     ichorMult: Number($('ichorMult').value),
     fullWait: Number($('fullWait').value),
     craftSpeed: Number($('craftSpeed').value),
+    mobRespawnSpeed: Number($('mobRespawnSpeed').value),
     fairPeddler: $('fairPeddler').checked,
     freeEstate: $('freeEstate').checked,
     craftMany: $('craftMany').checked,
+    bankBoxWithdraw: $('bankBoxWithdraw').checked,
     changedRates: RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]),
     stackNewItems: $('stackNewItems').checked,
     newStackSize: Number($('newStackSize').value),
@@ -1280,7 +1314,8 @@ function showReceipt() {
     ['Feeling Full waits changed', client.fullWaitChanged, server.fullWaitChanged],
     ['Crafting recipes changed', client.craftChanged, server.craftChanged],
     ['Peddler prices changed', client.peddlerChanged, server.peddlerChanged],
-    ['Estate building costs waived', client.estateChanged || 0, server.estateChanged || 0]
+    ['Estate building costs waived', client.estateChanged || 0, server.estateChanged || 0],
+    ['Mob respawn timers adjusted', client.mobRespawnChanged || 0, server.mobRespawnChanged || 0]
   ];
   $('tallyBody').replaceChildren(...rows.map(cells => {
     const tr = document.createElement('tr');
