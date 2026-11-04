@@ -10,6 +10,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **100 Estate Points & Progression Unlock:** Grants 100 available Estate Points and unlocks construction order across all floors (client UI & server authoritative checks).
 - **Bank Box Withdrawals:** Pull and withdraw items directly from Bank Boxes (drag or left-click) just like a full Bank.
 - **Craft Many Batch Limit (200 Max):** Raises the batch crafting slider ceiling from 30 up to 200 items in a single craft.
+- **Custom Crafting Rarity Rates:** Set exact percentage chances for all 5 equipment quality tiers (Normal, Fine, Superior, Flawless, Masterwork) across normal crafts and minigames.
 - **Adjustable Mob Spawn Timers:** Scale monster and pack respawn delays across all 509 NPCs (e.g., 2x faster respawns).
 - **Complete Curse Removal:** Eliminate curses gained from gathering nodes, combat attacks/spells, stealing/looting world items, and crafting.
 - **Item Stacking:** Expand resources (ores, bars, logs, fish) and non-stackables (cooked meals, potions, moulds, unstrung bows) to stacks of 100.
@@ -32,7 +33,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **Curse Removal:** Remove curse from gathering, combat, picking up or stealing items, and crafting.
 - **Totem & Ichor Cleansing:** Make totems and ichor clear more curse, and shorten the Feeling Full wait after using them.
 - **Progression & EXP Boosts:** 10x progression rewards on Desolate Zones & drop-offs, plus 3x sacrifice/purification EXP at altars and shrines.
-- **Crafting Speed:** Speed up normal crafting (Focused Craft minigames stay the same).
+- **Crafting Speed & Rarity Rates:** Speed up normal crafting timers and set exact percentage odds for equipment quality tiers (e.g. Masterwork, Flawless, Superior).
 - **Fair Peddlers:** Make peddlers pay the full General Store rate when you sell to them.
 - **Item Stacking:** Let meals, potions, moulds, unstrung bows, and resource items stack to 100.
 

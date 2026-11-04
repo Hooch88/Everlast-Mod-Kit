@@ -165,6 +165,44 @@
     .pack-try { display: grid; gap: 2px; font: 16px var(--body); }
     .pack-try input { width: 100%; accent-color: var(--death-ink); }
 
+    /* QUALITY / RARITY CONFIG */
+    .quality-box { border: 1px solid var(--parchment-2); padding: 12px; background: rgba(0,0,0,.02); border-radius: 4px; }
+    .quality-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .q-badge {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 3px;
+      min-width: 170px;
+      color: #fff;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .q-mw { background: #d35400; }
+    .q-fl { background: #8e44ad; }
+    .q-su { background: #2980b9; }
+    .q-fi { background: #27ae60; }
+    .q-no { background: #7f8c8d; }
+    .q-input { width: 2.5em !important; font-size: 26px !important; }
+    .q-pct { font: 22px var(--hand); color: var(--death-ink); margin-right: 6px; }
+    .q-slider { flex: 1 1 120px; accent-color: var(--death-ink); cursor: pointer; }
+    .quality-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 8px; border-top: 1px dashed var(--parchment-2); font-size: 16px; margin-top: 4px; }
+    .quality-footer strong { font-size: 20px; color: var(--death-ink); }
+    .preset-btn {
+      all: unset;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border: 1px solid var(--ink-2);
+      border-radius: 3px;
+      color: var(--ink);
+      background: var(--parchment);
+      margin-left: 4px;
+    }
+    .preset-btn:hover { background: var(--wax); color: var(--parchment); }
+
     /* SIGNING */
     .sign { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--parchment-2); padding-top: 20px; }
     .sign-note { font: 17px/1.35 var(--body); color: var(--ink-2); flex: 1 1 240px; min-width: 0; white-space: pre-line; }
@@ -449,6 +487,56 @@
             <p class="plain">Scales NpcDefs.DespawnedTime and NpcGroupDefs.RespawnTimeMs. 2 makes mobs respawn twice as fast; 0.5 makes them take twice as long.</p>
           </div>
         </div>
+      
+
+        <div class="clause open">
+          <span class="num">&sect;14</span>
+          <div>
+            <label class="term"><input type="checkbox" id="customQuality"><span class="box"></span><s>Crafted equipment rarity is left to unyielding fate.</s><span class="hand">master's touch</span></label>
+            <p class="plain">Strike this to control the exact percentage odds for each equipment rarity tier when crafting. Applies across both normal bulk crafting and minigames.</p>
+            <div id="qualityConfigArea" class="quality-box" style="margin-top: 12px; display: grid; gap: 8px;">
+              <div class="quality-row">
+                <span class="q-badge q-mw">Masterwork (Tier 4)</span>
+                <input class="ink-num q-input" type="number" id="qMasterwork" min="0" max="100" value="20" aria-label="Masterwork percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="qMasterworkRange" min="0" max="100" value="20">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-fl">Flawless (Tier 3)</span>
+                <input class="ink-num q-input" type="number" id="qFlawless" min="0" max="100" value="30" aria-label="Flawless percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="qFlawlessRange" min="0" max="100" value="30">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-su">Superior (Tier 2)</span>
+                <input class="ink-num q-input" type="number" id="qSuperior" min="0" max="100" value="25" aria-label="Superior percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="qSuperiorRange" min="0" max="100" value="25">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-fi">Fine (Tier 1)</span>
+                <input class="ink-num q-input" type="number" id="qFine" min="0" max="100" value="15" aria-label="Fine percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="qFineRange" min="0" max="100" value="15">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-no">Normal (Tier 0)</span>
+                <input class="ink-num q-input" type="number" id="qNormal" min="0" max="100" value="10" aria-label="Normal percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="qNormalRange" min="0" max="100" value="10">
+              </div>
+              <div class="quality-footer">
+                <span>Total: <strong id="qTotal">100%</strong></span>
+                <span class="q-presets">
+                  Presets:
+                  <button type="button" class="preset-btn" id="presetGod">100% Masterwork</button>
+                  <button type="button" class="preset-btn" id="presetHigh">High-Roller</button>
+                  <button type="button" class="preset-btn" id="presetVanilla">Vanilla</button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="sign">
@@ -480,9 +568,9 @@
             <p class="plain">This saves your changes as two new files. Your browser may ask permission to download both.</p>
           </li>
           <li id="binaryPatchStep">
-            <button class="btn secondary" id="patchFolderBtn">Patch Game Executables (&sect;10 Estate Points, &sect;11 Craft Many, &sect;12 Bank Boxes)</button>
+            <button class="btn secondary" id="patchFolderBtn">Patch Game Executables (&sect;10 Estate Points, &sect;11 Craft Many, &sect;12 Bank Boxes, &sect;14 Crafting Rarity)</button>
             <p class="plain" id="patchFolderNote">
-              <b>What this is:</b> Most terms save into your database files above. However, 100 Estate Points (&sect;10), Craft Many up to 200 (&sect;11), and Bank Box Withdrawals (&sect;12) are hardcoded into the game's executable files (<code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, <code>global-metadata.dat</code>).<br>
+              <b>What this is:</b> Most terms save into your database files above. However, 100 Estate Points (&sect;10), Craft Many up to 200 (&sect;11), Bank Box Withdrawals (&sect;12), and Crafting Quality Rarity (&sect;14) are hardcoded into the game's executable files (<code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, <code>global-metadata.dat</code>).<br>
               <b>When to use:</b> Use this after a Steam update (or after verifying game files in Steam) resets those files to vanilla, or whenever you want to toggle &sect;10, &sect;11, or &sect;12 on or off. Click this button and select your main <code>Everlast</code> game folder.
             </p>
           </li>
@@ -1455,6 +1543,31 @@ async function readOrBackupBytes(dirHandle, relPath) {
   return { fileHandle, bytes: new Uint8Array(cleanBytes) };
 }
 
+$('function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
+  const t_mw = Math.min(100, Math.max(0, Math.round(pMasterwork)));
+  const t_fl = Math.min(100, Math.max(0, t_mw + Math.round(pFlawless)));
+  const t_su = Math.min(100, Math.max(0, t_fl + Math.round(pSuperior)));
+  const t_fi = Math.min(100, Math.max(0, t_su + Math.round(pFine)));
+
+  const code = [
+    0x0f, 0x31,
+    0x69, 0xc0, 0x05, 0x84, 0x08, 0x08,
+    0xff, 0xc0,
+    0xba, 0x64, 0x00, 0x00, 0x00,
+    0xf7, 0xe2,
+    0x83, 0xfa, t_mw & 0xff, 0x72, 0x12,
+    0x83, 0xfa, t_fl & 0xff, 0x72, 0x13,
+    0x83, 0xfa, t_su & 0xff, 0x72, 0x14,
+    0x83, 0xfa, t_fi & 0xff, 0x72, 0x15,
+    0x31, 0xc0, 0xc3,
+    0xb8, 0x04, 0x00, 0x00, 0x00, 0xc3,
+    0xb8, 0x03, 0x00, 0x00, 0x00, 0xc3,
+    0xb8, 0x02, 0x00, 0x00, 0x00, 0xc3,
+    0xb8, 0x01, 0x00, 0x00, 0x00, 0xc3
+  ];
+  return new Uint8Array(code);
+}
+
 $('patchFolderBtn').onclick = async () => {
   const note = $('patchFolderNote');
   if (!window.showDirectoryPicker) {
@@ -1476,6 +1589,17 @@ $('patchFolderBtn').onclick = async () => {
       dll.bytes.set([0xc6, 0x83, 0x00, 0x01, 0x00, 0x00, 0x01], 0x1bda84e); // ShowBankBox AllowWithdraw = true
       dll.bytes.set([0xeb, 0x7f, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90], 0x1bd1cf5); // OnClick -> RequestWithdrawal
     }
+    let qPatch = null;
+    if ($('customQuality').checked) {
+      qPatch = makeQualityPatch(
+        Number($('qMasterwork').value),
+        Number($('qFlawless').value),
+        Number($('qSuperior').value),
+        Number($('qFine').value),
+        Number($('qNormal').value)
+      );
+      dll.bytes.set(qPatch, 0x35d7230); // Formula.RollCraftQuality (Client)
+    }
     let w = await dll.fileHandle.createWritable();
     await w.write(dll.bytes);
     await w.close();
@@ -1485,6 +1609,9 @@ $('patchFolderBtn').onclick = async () => {
     if ($('freeEstate').checked) {
       srv.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x173cc40); // Server CalculateEstatePoints -> 100
       srv.bytes.set([0x31, 0xc0, 0x49, 0x89, 0x00, 0x49, 0x89, 0x40, 0x08, 0x49, 0x89, 0x40, 0x10, 0x49, 0x89, 0x40, 0x18, 0x49, 0x89, 0x40, 0x20, 0xff, 0xc0, 0xc3], 0x173f260); // Server TryCheckProgression -> true
+    }
+    if (qPatch) {
+      srv.bytes.set(qPatch, 0x16b6f30); // Formula.RollCraftQuality (Server)
     }
     w = await srv.fileHandle.createWritable();
     await w.write(srv.bytes);
@@ -1611,6 +1738,48 @@ $('saveWorldBtn').onclick = async () => {
 
 showTerms(null);
 loadEngine();
+
+// Crafting Quality Sliders & Presets Logic
+function updateQualityTotal() {
+  const mw = Number($('qMasterwork').value) || 0;
+  const fl = Number($('qFlawless').value) || 0;
+  const su = Number($('qSuperior').value) || 0;
+  const fi = Number($('qFine').value) || 0;
+  const no = Number($('qNormal').value) || 0;
+  const total = mw + fl + su + fi + no;
+  const totalEl = $('qTotal');
+  if (totalEl) {
+    totalEl.textContent = total + '%';
+    totalEl.style.color = (total === 100) ? 'var(--death-ink)' : 'var(--warn)';
+    if (total !== 100) totalEl.textContent += ' (should equal 100%)';
+  }
+}
+
+['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'].forEach(tier => {
+  const inp = $('q' + tier);
+  const rng = $('q' + tier + 'Range');
+  if (inp && rng) {
+    inp.oninput = () => { rng.value = inp.value; updateQualityTotal(); checkReady(); };
+    rng.oninput = () => { inp.value = rng.value; updateQualityTotal(); checkReady(); };
+  }
+});
+
+function setQualityPreset(mw, fl, su, fi, no) {
+  const vals = { Masterwork: mw, Flawless: fl, Superior: su, Fine: fi, Normal: no };
+  for (const [tier, v] of Object.entries(vals)) {
+    if ($('q' + tier)) $('q' + tier).value = v;
+    if ($('q' + tier + 'Range')) $('q' + tier + 'Range').value = v;
+  }
+  updateQualityTotal();
+  checkReady();
+}
+
+if ($('presetGod')) $('presetGod').onclick = () => setQualityPreset(100, 0, 0, 0, 0);
+if ($('presetHigh')) $('presetHigh').onclick = () => setQualityPreset(20, 30, 25, 15, 10);
+if ($('presetVanilla')) $('presetVanilla').onclick = () => setQualityPreset(1, 4, 15, 30, 50);
+if ($('customQuality')) $('customQuality').onchange = () => { checkReady(); };
+updateQualityTotal();
+
 </script>
 </body>
 </html>

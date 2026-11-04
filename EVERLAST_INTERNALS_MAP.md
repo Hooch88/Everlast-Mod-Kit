@@ -105,6 +105,7 @@
 | `EstateController.CalculateEstatePoints` | `0x6005ea3` (24226) | `0x23a2230` | `0x1823a3830` | `48 89 5c 24 10 48` | `b8 64 00 00 00 c3` | `mov eax, 100; ret` -> Player always has 100 available Estate Points. |
 | `EstateController.CalculateMaxEstatePoints` | `0x6005ea4` (24227) | `0x23a29c0` | `0x1823a3fc0` | `48 89 5c 24 08 48` | `b8 64 00 00 00 c3` | `mov eax, 100; ret` -> Max Estate Points capacity is 100. |
 | `EstateController.IsPlotLockedByProgression` | `0x6005ea5` (24228) | `0x23a2de0` | `0x1823a43e0` | `48 89 5c 24 08 48` | `49 c7 00 00 00 00 00 31 c0 c3` | `mov qword ptr [r8], 0; xor eax, eax; ret` -> Plots are never locked by progression. |
+| `Formula.RollCraftQuality` (Client UI Roll) | `0x6000028` (40) | `0x35d7230` | `0x1835d8830` | `48 89 5c 24 08 57` | Custom 64B RNG | Injects fast Lemire reduction (`rdtsc + imul + mul 100`) against customizable percentage thresholds for tiers 0..4 (Normal..Masterwork). |
 | `TradingPanel.ShowBankBox` (`AllowWithdraw`) | `0x6002128` | `0x1bda84e` | `0x181bdbe4e` | `c6 83 00 01 00 00 00` | `c6 83 00 01 00 00 01` | `mov byte ptr [rbx + 0x100], 1` -> Sets `AllowWithdraw = true` for Bank Boxes (enables right-click/drag withdraw). |
 | `TradingItemBox.OnClick` (`BankBox` branch) | `0x60020f1` | `0x1bd1cf5` | `0x181bd32f5` | `33 d2 48 8b cb e8 c1 00 00 00` | `eb 7f 90 90 90 90 90 90 90 90` | `jmp short 0x181bd3376` -> Redirects Bank Box left-click from `RefuseBankBoxWithdraw` to `RequestWithdrawal`. |
 
@@ -125,3 +126,4 @@
 |---|---|---|---|---|---|
 | `EstateManager.CalculateEstatePoints` | `0x173cc40` | `0x14173d840` | `57 56 55 53 48 81` | `b8 64 00 00 00 c3` | `mov eax, 100; ret` -> Server always calculates 100 available Estate Points in `CanUpgradePlot` (`0x14173a1c5`). |
 | `EstateProgression.TryCheckProgression` | `0x173f260` | `0x14173fe60` | `41 57 41 56 41 55 ...` (24B) | `31 c0 49 89 00 49 89 40 08 49 89 40 10 49 89 40 18 49 89 40 20 ff c0 c3` | Zeroes out `out LocalizedString lockedReason` (`[r8..r8+0x20]`) and returns `eax = 1` (`true`, not locked by progression). |
+| `Formula.RollCraftQuality` (Server Authoritative) | `0x16b6f30` | `0x1416b7b30` | `55 41 56 57 56 53` | Custom 64B RNG | Injects fast Lemire reduction (`rdtsc + imul + mul 100`) against customizable percentage thresholds for tiers 0..4 (Normal..Masterwork). Generates authoritative quality and modifiers in `CreateItemWithQuality`. |
