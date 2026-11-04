@@ -1574,7 +1574,6 @@ function buildExecutablePatchPs1() {
 
   const srvPts = estateOn ? '@(0xb8,0x64,0x00,0x00,0x00,0xc3)' : '$null';
   const srvProg = estateOn ? '@(0x31,0xc0,0x49,0x89,0x00,0x49,0x89,0x40,0x08,0x49,0x89,0x40,0x10,0x49,0x89,0x40,0x18,0x49,0x89,0x40,0x20,0xff,0xc0,0xc3)' : '$null';
-  const srvQual = qualityOn ? `@(${qBytes})` : '$null';
 
   const metaLim = craftManyOn ? '@(200)' : '@(60)';
 
@@ -1624,7 +1623,7 @@ function buildExecutablePatchPs1() {
     "  try { & $work $fs $bs } finally { $fs.Close(); $bs.Close() }",
     "}",
     `Edit-Bin (Join-Path $evDir 'GameAssembly.dll') { param($fs,$bs) Patch-At $fs $bs 0x23a2230 ${gaPts1} 6; Patch-At $fs $bs 0x23a29c0 ${gaPts2} 6; Patch-At $fs $bs 0x23a2de0 ${gaLock} 10; Patch-At $fs $bs 0x1bda84e ${gaBank1} 7; Patch-At $fs $bs 0x1bd1cf5 ${gaBank2} 10; Patch-At $fs $bs 0x35d7230 ${gaQual} 64 }`,
-    `Edit-Bin (Join-Path $evDir 'Everlast_Data\\StreamingAssets\\Server\\Windows\\Raptor.Game.exe') { param($fs,$bs) Patch-At $fs $bs 0x173cc40 ${srvPts} 6; Patch-At $fs $bs 0x173f260 ${srvProg} 24; Patch-At $fs $bs 0x16b6f30 ${srvQual} 64 }`,
+    `Edit-Bin (Join-Path $evDir 'Everlast_Data\\StreamingAssets\\Server\\Windows\\Raptor.Game.exe') { param($fs,$bs) Patch-At $fs $bs 0x173cc40 ${srvPts} 6; Patch-At $fs $bs 0x173f260 ${srvProg} 24 }`,
     `Edit-Bin (Join-Path $evDir 'Everlast_Data\\il2cpp_data\\Metadata\\global-metadata.dat') { param($fs,$bs) Patch-At $fs $bs 0x105f1ca ${metaLim} 1 }`,
     `Write-Host '[SUCCESS] Patched Everlast executables in' $evDir '-> ${summaryText}' -ForegroundColor Green`
   ].join('\r\n');
