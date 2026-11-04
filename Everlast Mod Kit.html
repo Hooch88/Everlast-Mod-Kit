@@ -413,6 +413,22 @@
             <p class="plain">Strike this so peddlers pay the full General Store rate when you sell to them. What they charge you stays the same.</p>
           </div>
         </div>
+
+        <div class="clause">
+          <span class="num">&sect;10</span>
+          <div>
+            <label class="term"><input type="checkbox" id="freeEstate"><span class="box"></span><s>Estate plots and buildings require hard-earned materials to build.</s><span class="hand">free build</span></label>
+            <p class="plain">Strike this so all estate plots, house styles, decorations, and building upgrades require zero materials (ItemsForUpgrade waived).</p>
+          </div>
+        </div>
+
+        <div class="clause">
+          <span class="num">&sect;11</span>
+          <div>
+            <label class="term"><input type="checkbox" id="craftMany"><span class="box"></span><s>Craft Many is capped at 30 items per batch.</s><span class="hand">200 max</span></label>
+            <p class="plain">Strike this to boost the batch crafting slider up to 200 items in global-metadata.dat.</p>
+          </div>
+        </div>
       </section>
 
       <section class="sign">
@@ -562,7 +578,7 @@ let readyFiles = null;
 let readyStats = null;
 let loadedTerms = null;
 const fileHandles = {};
-const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources'];
+const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources', 'freeEstate', 'craftMany'];
 const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'occultXpMult', 'craftSpeed'];
 const STACK_TERMS = [['stackNewItems', 'newStackSize', 'newStackAmend', 'newSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
 let currentWorldJson = null;
@@ -914,7 +930,7 @@ function mostCommon(values) {
 // What a file says right now. A true term means it is already struck in this file.
 function readTerms(db) {
   const hasTable = name => fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name=?", [name]).length > 0;
-  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, craftSpeed: 1, newSize: null, resourceSize: null };
+  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, craftSpeed: 1, newSize: null, resourceSize: null };
   const changed = { resources: [], unstacked: [] };
 
   if (hasTable('ItemDefs')) {
@@ -974,6 +990,30 @@ function readTerms(db) {
 
 function processDb(db, options, isServer) {
   const stats = { stackChanged: 0, curseChanged: 0, totemsBuffed: 0, ichorsBuffed: 0, fullWaitChanged: 0, craftChanged: 0, peddlerChanged: 0 };
+
+  // 0. ESTATE PLOTS in EstatePlotDefs
+  if (options.freeEstate && fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='EstatePlotDefs'").length > 0) {
+    const plots = fetchRows(db, "SELECT Id, Variants FROM EstatePlotDefs");
+    const updPlot = db.prepare("UPDATE EstatePlotDefs SET Variants = ? WHERE Id = ?");
+    for (const plot of plots) {
+      if (!plot.Variants) continue;
+      try {
+        const vars = JSON.parse(plot.Variants);
+        let mod = false;
+        for (const v of vars) {
+          if (v.ItemsForUpgrade && v.ItemsForUpgrade.length > 0) {
+            v.ItemsForUpgrade = [];
+            mod = true;
+          }
+        }
+        if (mod) {
+          updPlot.run([JSON.stringify(vars), plot.Id]);
+          stats.estateChanged = (stats.estateChanged || 0) + 1;
+        }
+      } catch (e) {}
+    }
+    updPlot.free();
+  }
 
   // 1. STACKING & TOTEMS in ItemDefs
   if (fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name='ItemDefs'").length > 0) {
@@ -1170,6 +1210,8 @@ async function runMod() {
     fullWait: Number($('fullWait').value),
     craftSpeed: Number($('craftSpeed').value),
     fairPeddler: $('fairPeddler').checked,
+    freeEstate: $('freeEstate').checked,
+    craftMany: $('craftMany').checked,
     changedRates: RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]),
     stackNewItems: $('stackNewItems').checked,
     newStackSize: Number($('newStackSize').value),
@@ -1237,7 +1279,8 @@ function showReceipt() {
     ['Ichor changed', client.ichorsBuffed, server.ichorsBuffed],
     ['Feeling Full waits changed', client.fullWaitChanged, server.fullWaitChanged],
     ['Crafting recipes changed', client.craftChanged, server.craftChanged],
-    ['Peddler prices changed', client.peddlerChanged, server.peddlerChanged]
+    ['Peddler prices changed', client.peddlerChanged, server.peddlerChanged],
+    ['Estate building costs waived', client.estateChanged || 0, server.estateChanged || 0]
   ];
   $('tallyBody').replaceChildren(...rows.map(cells => {
     const tr = document.createElement('tr');
