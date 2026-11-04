@@ -68,9 +68,12 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
    - `Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\Raptor.Game.db`
 4. **Pick your changes:** Tick a term to strike it out, or untick one to put it back.
 5. **Click Sign and seal**, then **Save to my game folder** (saves database changes like stacking, curses, free materials, craft speeds, and mob respawns).
-6. **(Optional / After Steam Updates) Patch Executables:**
-   - **What it does:** Features like **100 Estate Points (§10)**, **Craft Many 200 (§11)**, and **Bank Box Withdrawals (§12)** are stored in compiled code files (`GameAssembly.dll`, `Raptor.Game.exe`, `global-metadata.dat`), not database tables.
-   - **When to use:** Whenever Steam updates Everlast or verifies files, Steam resets those files to vanilla. Click the **"Patch Game Executables"** button on the receipt and select your main `Everlast` folder to instantly re-apply (or restore) code patches without needing Python.
+6. **(Optional) Patch Executables (§10 Estate Points, §11 Craft Many, §12 Bank Boxes, §14 Crafting Rarity):**
+   - **Why this step is needed:** Features like **100 Estate Points (§10)**, **Craft Many 200 (§11)**, **Bank Box Withdrawals (§12)**, and **Crafting Quality Rarity (§14)** live in compiled code files (`GameAssembly.dll`, `Raptor.Game.exe`, `global-metadata.dat`), not `.db` database tables. Modern web browsers block web pages from directly editing `.dll` and `.exe` files for security.
+   - **How to apply (takes 2 seconds, no software to install):**
+     - **Option 1 (Instant Clipboard):** Click **Copy Executable Patch Command** on the page. Press **Win + X** &rarr; open **Terminal** (or **PowerShell**), press **Ctrl + V**, and hit **Enter**. It automatically auto-detects your Steam Everlast folder, creates `.original_bak` backups, and patches the files in milliseconds!
+     - **Option 2 (Batch File):** Or click **Download PATCH_EVERLAST.bat** and double-click it to run anytime.
+   - **When to use:** Whenever you toggle §10, §11, §12, or §14, or after Steam updates Everlast / verifies game files.
 
 ---
 
