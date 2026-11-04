@@ -1,10 +1,22 @@
 # Everlast Mod Kit
 
-A free, quality-of-life mod tool and patcher for **Everlast: Undying Tale**. Available both as a standalone no-install browser interface (`Everlast Mod Kit.html`) and an automated one-click Python patcher (`everlast_stack_mod.py`).
-
-Eliminates curse sources, raises stack limits, speeds up crafting, boosts altar/shrine EXP, raises batch crafting limits to 200, and enables truly free estate building with unlimited estate points.
+A free, all-in-one quality-of-life mod tool and patcher for **Everlast: Undying Tale**. Available both as a standalone no-install browser interface (`Everlast Mod Kit.html`) and an automated one-click Python patcher (`everlast_stack_mod.py`).
 
 There's nothing to install, and nothing is uploaded. Your files stay on your PC.
+
+### Key Features at a Glance
+
+- **Truly Free Estate Building:** Removes all material requirements (`ItemsForUpgrade`) across all estate plots, house styles, and decor.
+- **100 Estate Points & Progression Unlock:** Grants 100 available Estate Points and unlocks construction order across all floors (client UI & server authoritative checks).
+- **Bank Box Withdrawals:** Pull and withdraw items directly from Bank Boxes (drag or left-click) just like a full Bank.
+- **Craft Many Batch Limit (200 Max):** Raises the batch crafting slider ceiling from 30 up to 200 items in a single craft.
+- **Adjustable Mob Spawn Timers:** Scale monster and pack respawn delays across all 509 NPCs (e.g., 2x faster respawns).
+- **Complete Curse Removal:** Eliminate curses gained from gathering nodes, combat attacks/spells, stealing/looting world items, and crafting.
+- **Item Stacking:** Expand resources (ores, bars, logs, fish) and non-stackables (cooked meals, potions, moulds, unstrung bows) to stacks of 100.
+- **Faster Crafting:** Speed up regular crafting station timers without affecting Focused Craft minigames.
+- **Fair Peddler Payouts:** Make roaming peddlers pay the full 100% General Store sell rate.
+- **Totem & Ichor Buffs:** Boost cleansing values, shorten the Feeling Full delay, and multiply Occultism XP gained from altars and shrines.
+- **World Rider Settings:** Edit world XP rates, gather rates, loot rates, difficulty, and death drop penalties for any existing world save.
 
 ![The Everlast Mod Kit page](screenshots/contract.png)
 
