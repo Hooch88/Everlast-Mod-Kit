@@ -44,7 +44,7 @@
     .patch { background: var(--parchment); color: var(--wax); font-size: 16px; padding: 1px 7px; margin: 0 2px; }
 
     /* BOOKMARKS */
-    .bookmarks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: -28px; position: relative; }
+    .bookmarks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: -28px; position: relative; }
     .bookmark {
       all: unset;
       cursor: pointer;
@@ -280,6 +280,7 @@
 
     @media (max-width: 600px) {
       .slots { grid-template-columns: minmax(0, 1fr); }
+      .bookmarks { grid-template-columns: 1fr; margin-bottom: 0; }
       .bookmark { font-size: 17px; padding-inline: 12px; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -301,6 +302,7 @@
 
   <div class="bookmarks" role="tablist">
     <button class="bookmark active" role="tab" aria-selected="true" onclick="switchTab('databases')">The Contract<small>Curse and stacking</small></button>
+    <button class="bookmark" role="tab" aria-selected="false" onclick="switchTab('executables')">Game Executables<small>Crafting rarity & engine</small></button>
     <button class="bookmark" role="tab" aria-selected="false" onclick="switchTab('worlds')">World Rider<small>Rates and difficulty</small></button>
   </div>
 
@@ -590,6 +592,120 @@
     </main>
   </div>
 
+
+  <!-- GAME EXECUTABLES -->
+  <div id="tab-executables" class="tab-content">
+    <main class="sheet">
+      <h1>Game Executables & Engine Patches</h1>
+      <p class="sub">Crafting quality chances, 100 estate points, batch craft size & bank boxes</p>
+
+      <section class="section">
+        <h2>Zero Uploads Needed</h2>
+        <p class="plain">
+          Engine features live directly inside <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code>.<br>
+          You do <b>not</b> need to upload or drag any database files here. Simply configure your desired odds and features below, then click <b>Copy 1-Click Patch Command</b> or <b>Download PATCH_EVERLAST.bat</b>.<br>
+          The patcher automatically locates your Steam folder, creates safe <code>.original_bak</code> backups, and patches your files in under a second.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Engine Terms</h2>
+
+        <!-- §14 Crafting Quality -->
+        <div class="clause open">
+          <span class="num">&sect;1</span>
+          <div>
+            <label class="term"><input type="checkbox" id="exeCustomQuality" checked><span class="box"></span><s>Equipment crafting rarity is left to unyielding fate.</s><span class="hand">master's touch</span></label>
+            <p class="plain">Overrides equipment crafting rolls with your custom percentage odds across all forges, anvils, and bulk crafts.</p>
+            
+            <div id="exeQualityConfigArea" class="quality-box" style="margin-top: 12px; display: grid; gap: 8px;">
+              <div class="quality-row">
+                <span class="q-badge q-mw">Masterwork (Tier 4)</span>
+                <input class="ink-num q-input" type="number" id="exeQMasterwork" min="0" max="100" value="20" aria-label="Masterwork percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="exeQMasterworkRange" min="0" max="100" value="20">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-fl">Flawless (Tier 3)</span>
+                <input class="ink-num q-input" type="number" id="exeQFlawless" min="0" max="100" value="30" aria-label="Flawless percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="exeQFlawlessRange" min="0" max="100" value="30">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-su">Superior (Tier 2)</span>
+                <input class="ink-num q-input" type="number" id="exeQSuperior" min="0" max="100" value="25" aria-label="Superior percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="exeQSuperiorRange" min="0" max="100" value="25">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-fi">Fine (Tier 1)</span>
+                <input class="ink-num q-input" type="number" id="exeQFine" min="0" max="100" value="15" aria-label="Fine percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="exeQFineRange" min="0" max="100" value="15">
+              </div>
+              <div class="quality-row">
+                <span class="q-badge q-no">Normal (Tier 0)</span>
+                <input class="ink-num q-input" type="number" id="exeQNormal" min="0" max="100" value="10" aria-label="Normal percentage">
+                <span class="q-pct">%</span>
+                <input type="range" class="q-slider" id="exeQNormalRange" min="0" max="100" value="10">
+              </div>
+              <div class="quality-footer">
+                <span>Total: <strong id="exeQTotal">100%</strong></span>
+                <span class="q-presets">
+                  Presets:
+                  <button type="button" class="preset-btn" id="exePresetGod">100% Masterwork</button>
+                  <button type="button" class="preset-btn" id="exePresetHigh">High-Roller</button>
+                  <button type="button" class="preset-btn" id="exePresetBalanced">Balanced RPG</button>
+                  <button type="button" class="preset-btn" id="exePresetVanilla">Vanilla</button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- §10 Estate Points -->
+        <div class="clause open">
+          <span class="num">&sect;2</span>
+          <div>
+            <label class="term"><input type="checkbox" id="exeFreeEstate" checked><span class="box"></span><s>Estate points and progression are locked behind long regional milestones.</s><span class="hand">100 points</span></label>
+            <p class="plain">Sets Estate Points to 100 on start and unfreezes estate progression so you can build, upgrade, and fast travel anywhere immediately.</p>
+          </div>
+        </div>
+
+        <!-- §11 Craft Many -->
+        <div class="clause open">
+          <span class="num">&sect;3</span>
+          <div>
+            <label class="term"><input type="checkbox" id="exeCraftMany" checked><span class="box"></span><s>Craft Many is capped at 30/60 items per batch.</s><span class="hand">200 max</span></label>
+            <p class="plain">Increases the batch crafting slider limit to 200 items in global-metadata.dat.</p>
+          </div>
+        </div>
+
+        <!-- §12 Bank Box -->
+        <div class="clause open">
+          <span class="num">&sect;4</span>
+          <div>
+            <label class="term"><input type="checkbox" id="exeBankBoxWithdraw" checked><span class="box"></span><s>Bank Boxes only accept deposits and refuse withdrawals.</s><span class="hand">open access</span></label>
+            <p class="plain">Allows taking items back out of any Bank Box across the world, turning them into two-way portable stashes.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Apply to Your Game</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+          <button class="btn" id="exeCopyCmdBtn" type="button" style="font-size: 17px; padding: 12px 20px;">Copy 1-Click PowerShell Command</button>
+          <button class="btn secondary" id="exeDownloadBatBtn" type="button" style="font-size: 17px; padding: 12px 20px;">Download PATCH_EVERLAST.bat</button>
+          <button class="btn secondary" id="exeRestoreBatBtn" type="button" style="font-size: 15px; padding: 12px 18px; margin-left: auto;">Download RESTORE_VANILLA.bat</button>
+        </div>
+        <p class="plain" id="exeStatusNote" style="margin-top: 8px;">
+          <b>How to run:</b> Click <b>Copy 1-Click PowerShell Command</b>, press <b>Win + X</b> &rarr; <b>Terminal (or PowerShell)</b>, paste (<b>Ctrl + V</b>), and press <b>Enter</b>.<br>
+          Or click <b>Download PATCH_EVERLAST.bat</b> and double-click the file!
+        </p>
+      </section>
+    </main>
+  </div>
+
   <!-- WORLD RIDER -->
   <div id="tab-worlds" class="tab-content">
     <main class="sheet">
@@ -708,11 +824,12 @@ const EXPECTED_FILES = { clientFile: 'ItemDefs.db', serverFile: 'Raptor.Game.db'
 
 function switchTab(tabId) {
   document.querySelectorAll('.bookmark').forEach((t, i) => {
-    const active = (tabId === 'databases' && i === 0) || (tabId === 'worlds' && i === 1);
+    const active = (tabId === 'databases' && i === 0) || (tabId === 'executables' && i === 1) || (tabId === 'worlds' && i === 2);
     t.classList.toggle('active', active);
     t.setAttribute('aria-selected', String(active));
   });
   $('tab-databases').classList.toggle('active', tabId === 'databases');
+  $('tab-executables').classList.toggle('active', tabId === 'executables');
   $('tab-worlds').classList.toggle('active', tabId === 'worlds');
 }
 
@@ -734,12 +851,14 @@ function countChanges() {
   const sizes = STACK_TERMS.filter(([box, num, , size]) => $(box).checked && loadedTerms[box] && Number($(num).value) !== loadedTerms[size]).length;
   const rates = RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]).length;
   const qTiers = ['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'];
-  const qualitySlidersChanged = $('customQuality') && $('customQuality').checked && qTiers.some(t => Number($('q' + t).value) !== Number($('q' + t).defaultValue));
-  return terms + sizes + rates + (qualitySlidersChanged && !terms ? 1 : 0);
+  const qualitySlidersChanged = $('customQuality') && $('customQuality').checked && qTiers.some(t => Number($('q' + t).value) !== (loadedTerms['q' + t] ?? Number($('q' + t).defaultValue)));
+  return terms + sizes + rates + (qualitySlidersChanged ? 1 : 0);
 }
 
 function checkReady() {
-  const haveFiles = $('clientFile').files.length === 1 && $('serverFile').files.length === 1;
+  const haveClient = $('clientFile').files.length === 1;
+  const haveServer = $('serverFile').files.length === 1;
+  const haveFiles = haveClient && haveServer;
   const changes = countChanges();
   const seal = $('seal');
   if (readyFiles) return;
@@ -751,9 +870,13 @@ function checkReady() {
   if (engineFailed) {
     $('signNote').textContent = "Part of this tool couldn't load. Check your internet connection and reload the page.";
   } else if (!SQL) {
-    $('signNote').textContent = 'Getting the tool ready...';
-  } else if (!haveFiles) {
+    $('signNote').textContent = 'Loading SQLite database engine...';
+  } else if (!haveClient && !haveServer) {
     $('signNote').textContent = 'Add both game files above, then sign here.';
+  } else if (haveClient && !haveServer) {
+    $('signNote').textContent = 'ItemDefs.db attached ✓. Please select Raptor.Game.db above.';
+  } else if (!haveClient && haveServer) {
+    $('signNote').textContent = 'Raptor.Game.db attached ✓. Please select ItemDefs.db above.';
   } else if (!loadedTerms) {
     $('signNote').textContent = 'Reading your files...';
   } else if (changes === 0) {
@@ -781,6 +904,11 @@ function syncAmendments() {
 // Terms always start from the attached files. With no files, they stay locked.
 function showTerms(terms) {
   loadedTerms = terms;
+  if (terms) {
+    ['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'].forEach(t => {
+      terms['q' + t] = Number($('q' + t).value);
+    });
+  }
   TERM_BOXES.forEach(id => {
     const already = !!terms && terms[id];
     $(id).checked = already;
@@ -877,11 +1005,12 @@ $('clauses').querySelectorAll('input[type="number"]').forEach(input => {
 function showAttached(slot, input, expected) {
   const file = input.files[0];
   const state = slot.querySelector('.slot-state');
-  const wrong = !!file && !!expected && file.name !== expected;
+  const wrong = !!file && !!expected && file.name.toLowerCase() !== expected.toLowerCase();
   slot.classList.toggle('attached', !!file && !wrong);
   slot.classList.toggle('wrong', wrong);
   if (!file) state.textContent = `Drop ${expected} here`;
-  else state.textContent = wrong ? `This is ${file.name}. It should be ${expected}.` : `${file.name} attached`;
+  else state.textContent = wrong ? `This is ${file.name}. It should be ${expected}.` : `${file.name} attached ✓`;
+  checkReady();
 }
 
 function setInputFile(input, file) {
@@ -898,26 +1027,18 @@ function wireDrop(slot, input) {
     e.preventDefault();
     slot.classList.remove('dragging');
     if (!e.dataTransfer.files.length) return;
-    // The drop's data is gone after this event, so ask for the handle before anything else.
     const handle = e.dataTransfer.items[0]?.getAsFileSystemHandle?.();
     fileHandles[input.id] = null;
     handle?.then(h => { if (h?.kind === 'file') fileHandles[input.id] = h; }).catch(console.warn);
-    input.files = e.dataTransfer.files;
-    input.dispatchEvent(new Event('change'));
+    setInputFile(input, e.dataTransfer.files[0]);
+    showAttached(slot, input, EXPECTED_FILES[input.id]);
+    readAttachedTerms();
   });
 
-  input.addEventListener('click', () => { fileHandles[input.id] = null; });
-  slot.addEventListener('click', async e => {
-    if (!window.showOpenFilePicker || e.target === input) return;
-    e.preventDefault();
-    try {
-      const [handle] = await showOpenFilePicker({ types: [{ accept: { 'application/octet-stream': [input.accept] } }] });
-      setInputFile(input, await handle.getFile());
-      fileHandles[input.id] = handle;
-      input.dispatchEvent(new Event('change'));
-    } catch(err) {
-      if (err.name !== 'AbortError') input.click();
-    }
+  input.addEventListener('change', () => {
+    fileHandles[input.id] = null;
+    showAttached(slot, input, EXPECTED_FILES[input.id]);
+    readAttachedTerms();
   });
 }
 
@@ -949,10 +1070,6 @@ function showSaveError(err) {
 
 [['clientFile', 'clientSlot'], ['serverFile', 'serverSlot']].forEach(([id, slotId]) => {
   wireDrop($(slotId), $(id));
-  $(id).onchange = () => {
-    showAttached($(slotId), $(id), EXPECTED_FILES[id]);
-    readAttachedTerms();
-  };
 });
 
 // Load sql.js
@@ -1551,17 +1668,79 @@ function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
   return new Uint8Array(code);
 }
 
-function buildExecutablePatchPs1() {
-  const estateOn = $('freeEstate').checked;
-  const craftManyOn = $('craftMany').checked;
-  const bankBoxOn = $('bankBoxWithdraw').checked;
-  const qualityOn = $('customQuality').checked;
+function makeBatFile(ps, title, echoMsg, filename) {
+  const u16 = new Uint8Array(ps.length * 2);
+  for (let i = 0; i < ps.length; i++) {
+    const code = ps.charCodeAt(i);
+    u16[i * 2] = code & 0xff;
+    u16[i * 2 + 1] = (code >> 8) & 0xff;
+  }
+  let bin = '';
+  for (let i = 0; i < u16.length; i++) bin += String.fromCharCode(u16[i]);
+  const b64 = btoa(bin);
+  const bat = `@echo off\r\ntitle ${title}\r\necho ${echoMsg}...\r\npowershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand ${b64}\r\necho.\r\npause\r\n`;
+  const blob = new Blob([bat], { type: 'application/octet-stream' });
+  triggerDownload(blob, filename);
+}
 
-  const mw = Number($('qMasterwork').value) || 0;
-  const fl = Number($('qFlawless').value) || 0;
-  const su = Number($('qSuperior').value) || 0;
-  const fi = Number($('qFine').value) || 0;
-  const no = Number($('qNormal').value) || 0;
+function buildRestoreExecutablePs1() {
+  const ps = [
+    "$ErrorActionPreference = 'Stop'",
+    "$evDir = $null",
+    "$cands = @('D:\\SteamLibrary\\steamapps\\common\\Everlast','C:\\Program Files (x86)\\Steam\\steamapps\\common\\Everlast','C:\\SteamLibrary\\steamapps\\common\\Everlast','E:\\SteamLibrary\\steamapps\\common\\Everlast','F:\\SteamLibrary\\steamapps\\common\\Everlast','G:\\SteamLibrary\\steamapps\\common\\Everlast')",
+    "foreach ($p in $cands) { if (Test-Path (Join-Path $p 'GameAssembly.dll')) { $evDir = $p; break } }",
+    "if (-not $evDir) {",
+    "  foreach ($vdf in @('C:\\Program Files (x86)\\Steam\\steamapps\\libraryfolders.vdf','C:\\Steam\\steamapps\\libraryfolders.vdf')) {",
+    "    if (Test-Path $vdf) {",
+    "      Select-String -Path $vdf -Pattern '\"path\"\\s+\"([^\"]+)\"' | ForEach-Object {",
+    "        $c = Join-Path ($_.Matches.Groups[1].Value -replace '\\\\\\\\','\\') 'steamapps\\common\\Everlast'",
+    "        if (Test-Path (Join-Path $c 'GameAssembly.dll')) { $evDir = $c }",
+    "      }",
+    "    }",
+    "  }",
+    "}",
+    "if (-not $evDir) {",
+    "  Add-Type -AssemblyName System.Windows.Forms",
+    "  $dlg = New-Object System.Windows.Forms.FolderBrowserDialog",
+    "  $dlg.Description = 'Select your main Everlast Steam folder'",
+    "  if ($dlg.ShowDialog() -eq 'OK' -and (Test-Path (Join-Path $dlg.SelectedPath 'GameAssembly.dll'))) { $evDir = $dlg.SelectedPath }",
+    "  else { Write-Host '[ERROR] Could not find Everlast folder.' -ForegroundColor Red; return }",
+    "}",
+    "$targets = @(",
+    "  'GameAssembly.dll',",
+    "  'Everlast_Data\\StreamingAssets\\Server\\Windows\\Raptor.Game.exe',",
+    "  'Everlast_Data\\il2cpp_data\\Metadata\\global-metadata.dat'",
+    ")",
+    "$restoredCount = 0",
+    "foreach ($rel in $targets) {",
+    "  $f = Join-Path $evDir $rel",
+    "  $bak = $f + '.original_bak'",
+    "  if (Test-Path $bak) {",
+    "    Copy-Item $bak $f -Force",
+    "    Write-Host \"[RESTORED] $rel\" -ForegroundColor Cyan",
+    "    $restoredCount++",
+    "  }",
+    "}",
+    "if ($restoredCount -gt 0) {",
+    "  Write-Host \"[SUCCESS] Restored $restoredCount files to original vanilla state in $evDir!\" -ForegroundColor Green",
+    "} else {",
+    "  Write-Host \"[INFO] No .original_bak backup files found. Files are already original!\" -ForegroundColor Yellow",
+    "}"
+  ].join('\r\n');
+  return ps;
+}
+
+function buildExecutablePatchPs1() {
+  const estateOn = $('exeFreeEstate') ? $('exeFreeEstate').checked : $('freeEstate').checked;
+  const craftManyOn = $('exeCraftMany') ? $('exeCraftMany').checked : $('craftMany').checked;
+  const bankBoxOn = $('exeBankBoxWithdraw') ? $('exeBankBoxWithdraw').checked : $('bankBoxWithdraw').checked;
+  const qualityOn = $('exeCustomQuality') ? $('exeCustomQuality').checked : $('customQuality').checked;
+
+  const mw = Number($('exeQMasterwork')?.value ?? $('qMasterwork')?.value) || 0;
+  const fl = Number($('exeQFlawless')?.value ?? $('qFlawless')?.value) || 0;
+  const su = Number($('exeQSuperior')?.value ?? $('qSuperior')?.value) || 0;
+  const fi = Number($('exeQFine')?.value ?? $('qFine')?.value) || 0;
+  const no = Number($('exeQNormal')?.value ?? $('qNormal')?.value) || 0;
 
   const qBytes = Array.from(makeQualityPatch(mw, fl, su, fi, no)).join(',');
 
@@ -1570,7 +1749,8 @@ function buildExecutablePatchPs1() {
   const gaLock = estateOn ? '@(0x49,0xc7,0x00,0x00,0x00,0x00,0x00,0x31,0xc0,0xc3)' : '$null';
   const gaBank1 = bankBoxOn ? '@(0xc6,0x83,0x00,0x01,0x00,0x00,0x01)' : '$null';
   const gaBank2 = bankBoxOn ? '@(0xeb,0x7f,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90)' : '$null';
-  const gaQual = qualityOn ? `@(${qBytes})` : '$null';
+  const gaQual = qualityOn ? `@(${qBytes})` : '$null';
+
   const gaQualHook = qualityOn ? '@(0x52,0xe8,0x0f,0x6e,0x75,0x01,0x5a,0x89,0x42,0x48,0x90,0x90,0x90)' : '$null';
 
   const srvPts = estateOn ? '@(0xb8,0x64,0x00,0x00,0x00,0xc3)' : '$null';
@@ -1648,20 +1828,40 @@ if ($('downloadBatBtn')) {
   $('downloadBatBtn').onclick = () => {
     const note = $('patchFolderNote');
     const { ps, summaryText } = buildExecutablePatchPs1();
-    // Encode UTF-16LE base64 for powershell -EncodedCommand
-    const u16 = new Uint8Array(ps.length * 2);
-    for (let i = 0; i < ps.length; i++) {
-      const code = ps.charCodeAt(i);
-      u16[i * 2] = code & 0xff;
-      u16[i * 2 + 1] = (code >> 8) & 0xff;
-    }
-    let bin = '';
-    for (let i = 0; i < u16.length; i++) bin += String.fromCharCode(u16[i]);
-    const b64 = btoa(bin);
-    const bat = `@echo off\r\ntitle Everlast Mod Kit - Executable Patcher\r\necho Applying Everlast executable patches...\r\npowershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand ${b64}\r\necho.\r\npause\r\n`;
-    const blob = new Blob([bat], { type: 'application/octet-stream' });
-    triggerDownload(blob, 'PATCH_EVERLAST.bat');
+    makeBatFile(ps, 'Everlast Mod Kit - Executable Patcher', 'Applying Everlast executable patches', 'PATCH_EVERLAST.bat');
     note.innerHTML = `<b>Downloaded <code>PATCH_EVERLAST.bat</code>!</b> Double-click it to apply: <code>${summaryText}</code>`;
+  };
+}
+
+if ($('exeCopyCmdBtn')) {
+  $('exeCopyCmdBtn').onclick = async () => {
+    const note = $('exeStatusNote');
+    const { ps, summaryText } = buildExecutablePatchPs1();
+    try {
+      await navigator.clipboard.writeText(ps);
+      $('exeCopyCmdBtn').textContent = 'Copied! Paste into PowerShell (Win+X -> Terminal)';
+      note.innerHTML = `<b style="color:var(--sage)">Copied 1-Click Command to clipboard!</b><br>1. Press <b>Win + X</b> and click <b>Terminal</b> (or <b>PowerShell</b>).<br>2. Press <b>Ctrl + V</b> and hit <b>Enter</b>.<br><b>Configured patches:</b> <code>${summaryText}</code>`;
+    } catch (err) {
+      note.textContent = 'Could not copy automatically. Click "Download PATCH_EVERLAST.bat" instead.';
+    }
+  };
+}
+
+if ($('exeDownloadBatBtn')) {
+  $('exeDownloadBatBtn').onclick = () => {
+    const note = $('exeStatusNote');
+    const { ps, summaryText } = buildExecutablePatchPs1();
+    makeBatFile(ps, 'Everlast Mod Kit - Executable Patcher', 'Applying Everlast executable patches', 'PATCH_EVERLAST.bat');
+    note.innerHTML = `<b style="color:var(--sage)">Downloaded <code>PATCH_EVERLAST.bat</code>!</b> Double-click it to apply: <code>${summaryText}</code>`;
+  };
+}
+
+if ($('exeRestoreBatBtn')) {
+  $('exeRestoreBatBtn').onclick = () => {
+    const note = $('exeStatusNote');
+    const ps = buildRestoreExecutablePs1();
+    makeBatFile(ps, 'Everlast Mod Kit - Vanilla Restorer', 'Restoring original Everlast executables', 'RESTORE_VANILLA.bat');
+    note.innerHTML = `<b style="color:var(--sage)">Downloaded <code>RESTORE_VANILLA.bat</code>!</b> Double-click it anytime to restore vanilla executables.`;
   };
 }
 
@@ -1774,11 +1974,11 @@ loadEngine();
 
 // Crafting Quality Sliders & Presets Logic
 function updateQualityTotal() {
-  const mw = Number($('qMasterwork').value) || 0;
-  const fl = Number($('qFlawless').value) || 0;
-  const su = Number($('qSuperior').value) || 0;
-  const fi = Number($('qFine').value) || 0;
-  const no = Number($('qNormal').value) || 0;
+  const mw = Number($('qMasterwork')?.value) || 0;
+  const fl = Number($('qFlawless')?.value) || 0;
+  const su = Number($('qSuperior')?.value) || 0;
+  const fi = Number($('qFine')?.value) || 0;
+  const no = Number($('qNormal')?.value) || 0;
   const total = mw + fl + su + fi + no;
   const totalEl = $('qTotal');
   if (totalEl) {
@@ -1788,13 +1988,76 @@ function updateQualityTotal() {
   }
 }
 
-['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'].forEach(tier => {
-  const inp = $('q' + tier);
-  const rng = $('q' + tier + 'Range');
-  if (inp && rng) {
-    inp.oninput = () => { rng.value = inp.value; updateQualityTotal(); invalidateSeal(); };
-    rng.oninput = () => { inp.value = rng.value; updateQualityTotal(); invalidateSeal(); };
+function updateExeQualityTotal() {
+  const mw = Number($('exeQMasterwork')?.value) || 0;
+  const fl = Number($('exeQFlawless')?.value) || 0;
+  const su = Number($('exeQSuperior')?.value) || 0;
+  const fi = Number($('exeQFine')?.value) || 0;
+  const no = Number($('exeQNormal')?.value) || 0;
+  const total = mw + fl + su + fi + no;
+  const totalEl = $('exeQTotal');
+  if (totalEl) {
+    totalEl.textContent = total + '%';
+    totalEl.style.color = (total === 100) ? 'var(--death-ink)' : 'var(--warn)';
+    if (total !== 100) totalEl.textContent += ' (must equal 100%)';
   }
+}
+
+function syncExeInputs(source) {
+  const fields = [
+    ['freeEstate', 'exeFreeEstate', 'check'],
+    ['craftMany', 'exeCraftMany', 'check'],
+    ['bankBoxWithdraw', 'exeBankBoxWithdraw', 'check'],
+    ['customQuality', 'exeCustomQuality', 'check'],
+    ['qMasterwork', 'exeQMasterwork', 'val'],
+    ['qMasterworkRange', 'exeQMasterworkRange', 'val'],
+    ['qFlawless', 'exeQFlawless', 'val'],
+    ['qFlawlessRange', 'exeQFlawlessRange', 'val'],
+    ['qSuperior', 'exeQSuperior', 'val'],
+    ['qSuperiorRange', 'exeQSuperiorRange', 'val'],
+    ['qFine', 'exeQFine', 'val'],
+    ['qFineRange', 'exeQFineRange', 'val'],
+    ['qNormal', 'exeQNormal', 'val'],
+    ['qNormalRange', 'exeQNormalRange', 'val']
+  ];
+
+  for (const [id1, id2, type] of fields) {
+    const el1 = $(id1);
+    const el2 = $(id2);
+    if (!el1 || !el2) continue;
+    if (source === 1) {
+      if (type === 'check') el2.checked = el1.checked;
+      else el2.value = el1.value;
+    } else {
+      if (type === 'check') el1.checked = el2.checked;
+      else el1.value = el2.value;
+    }
+  }
+  updateQualityTotal();
+  updateExeQualityTotal();
+  invalidateSeal();
+}
+
+['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'].forEach(tier => {
+  const inp1 = $('q' + tier);
+  const rng1 = $('q' + tier + 'Range');
+  if (inp1 && rng1) {
+    inp1.oninput = () => { rng1.value = inp1.value; syncExeInputs(1); };
+    rng1.oninput = () => { inp1.value = rng1.value; syncExeInputs(1); };
+  }
+  const inp2 = $('exeQ' + tier);
+  const rng2 = $('exeQ' + tier + 'Range');
+  if (inp2 && rng2) {
+    inp2.oninput = () => { rng2.value = inp2.value; syncExeInputs(2); };
+    rng2.oninput = () => { inp2.value = rng2.value; syncExeInputs(2); };
+  }
+});
+
+['freeEstate', 'craftMany', 'bankBoxWithdraw', 'customQuality'].forEach(id => {
+  const el1 = $(id);
+  const el2 = $('exe' + id.charAt(0).toUpperCase() + id.slice(1));
+  if (el1) el1.onchange = () => syncExeInputs(1);
+  if (el2) el2.onchange = () => syncExeInputs(2);
 });
 
 function setQualityPreset(mw, fl, su, fi, no) {
@@ -1802,17 +2065,27 @@ function setQualityPreset(mw, fl, su, fi, no) {
   for (const [tier, v] of Object.entries(vals)) {
     if ($('q' + tier)) $('q' + tier).value = v;
     if ($('q' + tier + 'Range')) $('q' + tier + 'Range').value = v;
+    if ($('exeQ' + tier)) $('exeQ' + tier).value = v;
+    if ($('exeQ' + tier + 'Range')) $('exeQ' + tier + 'Range').value = v;
   }
   if ($('customQuality')) $('customQuality').checked = true;
+  if ($('exeCustomQuality')) $('exeCustomQuality').checked = true;
   updateQualityTotal();
+  updateExeQualityTotal();
   invalidateSeal();
 }
 
 if ($('presetGod')) $('presetGod').onclick = () => setQualityPreset(100, 0, 0, 0, 0);
-if ($('presetHigh')) $('presetHigh').onclick = () => setQualityPreset(20, 30, 25, 15, 10);
+if ($('presetHigh')) $('presetHigh').onclick = () => setQualityPreset(40, 30, 20, 10, 0);
 if ($('presetVanilla')) $('presetVanilla').onclick = () => setQualityPreset(1, 4, 15, 30, 50);
-if ($('customQuality')) $('customQuality').onchange = () => { invalidateSeal(); };
+
+if ($('exePresetGod')) $('exePresetGod').onclick = () => setQualityPreset(100, 0, 0, 0, 0);
+if ($('exePresetHigh')) $('exePresetHigh').onclick = () => setQualityPreset(40, 30, 20, 10, 0);
+if ($('exePresetBalanced')) $('exePresetBalanced').onclick = () => setQualityPreset(20, 30, 25, 15, 10);
+if ($('exePresetVanilla')) $('exePresetVanilla').onclick = () => setQualityPreset(1, 4, 15, 30, 50);
+
 updateQualityTotal();
+updateExeQualityTotal();
 
 </script>
 </body>
