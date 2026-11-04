@@ -1570,7 +1570,8 @@ function buildExecutablePatchPs1() {
   const gaLock = estateOn ? '@(0x49,0xc7,0x00,0x00,0x00,0x00,0x00,0x31,0xc0,0xc3)' : '$null';
   const gaBank1 = bankBoxOn ? '@(0xc6,0x83,0x00,0x01,0x00,0x00,0x01)' : '$null';
   const gaBank2 = bankBoxOn ? '@(0xeb,0x7f,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90)' : '$null';
-  const gaQual = qualityOn ? `@(${qBytes})` : '$null';
+  const gaQual = qualityOn ? `@(${qBytes})` : '$null';
+  const gaQualHook = qualityOn ? '@(0x52,0xe8,0x0f,0x6e,0x75,0x01,0x5a,0x89,0x42,0x48,0x90,0x90,0x90)' : '$null';
 
   const srvPts = estateOn ? '@(0xb8,0x64,0x00,0x00,0x00,0xc3)' : '$null';
   const srvProg = estateOn ? '@(0x31,0xc0,0x49,0x89,0x00,0x49,0x89,0x40,0x08,0x49,0x89,0x40,0x10,0x49,0x89,0x40,0x18,0x49,0x89,0x40,0x20,0xff,0xc0,0xc3)' : '$null';
@@ -1622,7 +1623,7 @@ function buildExecutablePatchPs1() {
     "  $fs = [IO.File]::Open($f, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite)",
     "  try { & $work $fs $bs } finally { $fs.Close(); $bs.Close() }",
     "}",
-    `Edit-Bin (Join-Path $evDir 'GameAssembly.dll') { param($fs,$bs) Patch-At $fs $bs 0x23a2230 ${gaPts1} 6; Patch-At $fs $bs 0x23a29c0 ${gaPts2} 6; Patch-At $fs $bs 0x23a2de0 ${gaLock} 10; Patch-At $fs $bs 0x1bda84e ${gaBank1} 7; Patch-At $fs $bs 0x1bd1cf5 ${gaBank2} 10; Patch-At $fs $bs 0x35d7230 ${gaQual} 64 }`,
+    `Edit-Bin (Join-Path $evDir 'GameAssembly.dll') { param($fs,$bs) Patch-At $fs $bs 0x23a2230 ${gaPts1} 6; Patch-At $fs $bs 0x23a29c0 ${gaPts2} 6; Patch-At $fs $bs 0x23a2de0 ${gaLock} 10; Patch-At $fs $bs 0x1bda84e ${gaBank1} 7; Patch-At $fs $bs 0x1bd1cf5 ${gaBank2} 10; Patch-At $fs $bs 0x35d7230 ${gaQual} 64; Patch-At $fs $bs 0x1e8041b ${gaQualHook} 13 }`,
     `Edit-Bin (Join-Path $evDir 'Everlast_Data\\StreamingAssets\\Server\\Windows\\Raptor.Game.exe') { param($fs,$bs) Patch-At $fs $bs 0x173cc40 ${srvPts} 6; Patch-At $fs $bs 0x173f260 ${srvProg} 24 }`,
     `Edit-Bin (Join-Path $evDir 'Everlast_Data\\il2cpp_data\\Metadata\\global-metadata.dat') { param($fs,$bs) Patch-At $fs $bs 0x105f1ca ${metaLim} 1 }`,
     `Write-Host '[SUCCESS] Patched Everlast executables in' $evDir '-> ${summaryText}' -ForegroundColor Green`
