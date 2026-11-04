@@ -96,3 +96,4 @@
    - Patch `GameAssembly.dll` at `0xe929f0` to return `100` (`b8 64 00 00 00 c3`).
    - Patch `GameAssembly.dll` pointer table at `0x5599780` to point to `0x180e93ff0` (`f0 3f`).
    - Patch `GameAssembly.dll` at `0xe92aa0` to return `false` (`31 c0 c3 90 90 90`).
+
