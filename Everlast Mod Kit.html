@@ -568,10 +568,13 @@
             <p class="plain">This saves your changes as two new files. Your browser may ask permission to download both.</p>
           </li>
           <li id="binaryPatchStep">
-            <button class="btn secondary" id="patchFolderBtn">Patch Game Executables (&sect;10 Estate Points, &sect;11 Craft Many, &sect;12 Bank Boxes, &sect;14 Crafting Rarity)</button>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <button class="btn" id="patchFolderBtn" type="button">Copy Executable Patch Command (&sect;10, &sect;11, &sect;12, &sect;14)</button>
+              <button class="btn secondary" id="downloadBatBtn" type="button">Download PATCH_EVERLAST.bat</button>
+            </div>
             <p class="plain" id="patchFolderNote">
-              <b>What this is:</b> Most terms save into your database files above. However, 100 Estate Points (&sect;10), Craft Many up to 200 (&sect;11), Bank Box Withdrawals (&sect;12), and Crafting Quality Rarity (&sect;14) are hardcoded into the game's executable files (<code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, <code>global-metadata.dat</code>).<br>
-              <b>When to use:</b> Use this after a Steam update (or after verifying game files in Steam) resets those files to vanilla, or whenever you want to toggle &sect;10, &sect;11, or &sect;12 on or off. Click this button and select your main <code>Everlast</code> game folder.
+              <b>Why this step is needed:</b> Most terms save into your <code>.db</code> database files above. However, 100 Estate Points (&sect;10), Craft Many up to 200 (&sect;11), Bank Box Withdrawals (&sect;12), and Crafting Quality Rarity (&sect;14) live inside <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code> (and web browsers block web pages from modifying <code>.dll</code> and <code>.exe</code> files directly).<br>
+              <b>How to apply in 2 seconds (no installs needed):</b> Click <b>Copy Executable Patch Command</b> above, press <b>Win + X</b> &rarr; <b>Terminal (or PowerShell)</b>, paste (<b>Ctrl + V</b>), and hit <b>Enter</b>. Or click <b>Download PATCH_EVERLAST.bat</b> and double-click it. It auto-detects your Steam Everlast folder, creates <code>.original_bak</code> backups, and applies your exact settings!
             </p>
           </li>
         </ol>
@@ -1523,31 +1526,6 @@ $('downloadBtn').onclick = () => {
   $('deliverySteps').hidden = false;
 };
 
-async function getNestedFileHandle(dirHandle, relPath, create = false) {
-  const parts = relPath.split('/');
-  let cur = dirHandle;
-  for (let i = 0; i < parts.length - 1; i++) {
-    cur = await cur.getDirectoryHandle(parts[i], { create });
-  }
-  return await cur.getFileHandle(parts[parts.length - 1], { create });
-}
-
-async function readOrBackupBytes(dirHandle, relPath) {
-  const fileHandle = await getNestedFileHandle(dirHandle, relPath, false);
-  let bakHandle;
-  try {
-    bakHandle = await getNestedFileHandle(dirHandle, relPath + '.original_bak', false);
-  } catch (e) {
-    const origBytes = new Uint8Array(await (await fileHandle.getFile()).arrayBuffer());
-    bakHandle = await getNestedFileHandle(dirHandle, relPath + '.original_bak', true);
-    const w = await bakHandle.createWritable();
-    await w.write(origBytes);
-    await w.close();
-  }
-  const cleanBytes = new Uint8Array(await (await bakHandle.getFile()).arrayBuffer());
-  return { fileHandle, bytes: new Uint8Array(cleanBytes) };
-}
-
 function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
   const t_mw = Math.min(100, Math.max(0, Math.round(pMasterwork)));
   const t_fl = Math.min(100, Math.max(0, t_mw + Math.round(pFlawless)));
@@ -1573,69 +1551,119 @@ function makeQualityPatch(pMasterwork, pFlawless, pSuperior, pFine, pNormal) {
   return new Uint8Array(code);
 }
 
+function buildExecutablePatchPs1() {
+  const estateOn = $('freeEstate').checked;
+  const craftManyOn = $('craftMany').checked;
+  const bankBoxOn = $('bankBoxWithdraw').checked;
+  const qualityOn = $('customQuality').checked;
+
+  const mw = Number($('qMasterwork').value) || 0;
+  const fl = Number($('qFlawless').value) || 0;
+  const su = Number($('qSuperior').value) || 0;
+  const fi = Number($('qFine').value) || 0;
+  const no = Number($('qNormal').value) || 0;
+
+  const qBytes = Array.from(makeQualityPatch(mw, fl, su, fi, no)).join(',');
+
+  const gaPts1 = estateOn ? '@(0xb8,0x64,0x00,0x00,0x00,0xc3)' : '$null';
+  const gaPts2 = estateOn ? '@(0xb8,0x64,0x00,0x00,0x00,0xc3)' : '$null';
+  const gaLock = estateOn ? '@(0x49,0xc7,0x00,0x00,0x00,0x00,0x00,0x31,0xc0,0xc3)' : '$null';
+  const gaBank1 = bankBoxOn ? '@(0xc6,0x83,0x00,0x01,0x00,0x00,0x01)' : '$null';
+  const gaBank2 = bankBoxOn ? '@(0xeb,0x7f,0x90,0x90,0x90,0x90,0x90,0x90,0x90,0x90)' : '$null';
+  const gaQual = qualityOn ? `@(${qBytes})` : '$null';
+
+  const srvPts = estateOn ? '@(0xb8,0x64,0x00,0x00,0x00,0xc3)' : '$null';
+  const srvProg = estateOn ? '@(0x31,0xc0,0x49,0x89,0x00,0x49,0x89,0x40,0x08,0x49,0x89,0x40,0x10,0x49,0x89,0x40,0x18,0x49,0x89,0x40,0x20,0xff,0xc0,0xc3)' : '$null';
+  const srvQual = qualityOn ? `@(${qBytes})` : '$null';
+
+  const metaLim = craftManyOn ? '@(200)' : '@(60)';
+
+  const summaryParts = [];
+  summaryParts.push(estateOn ? '100 Estate Points: ON' : '100 Estate Points: Vanilla');
+  summaryParts.push(craftManyOn ? 'Craft Many 200: ON' : 'Craft Many: Vanilla (60)');
+  summaryParts.push(bankBoxOn ? 'Bank Box Withdraw: ON' : 'Bank Box Withdraw: Vanilla');
+  summaryParts.push(qualityOn ? `Crafting Rarity (${mw}% MW / ${fl}% FL / ${su}% SU / ${fi}% FI / ${no}% NO)` : 'Crafting Rarity: Vanilla');
+  const summaryText = summaryParts.join(' | ');
+
+  const ps = [
+    "$ErrorActionPreference = 'Stop'",
+    "$evDir = $null",
+    "$cands = @('D:\\SteamLibrary\\steamapps\\common\\Everlast','C:\\Program Files (x86)\\Steam\\steamapps\\common\\Everlast','C:\\SteamLibrary\\steamapps\\common\\Everlast','E:\\SteamLibrary\\steamapps\\common\\Everlast','F:\\SteamLibrary\\steamapps\\common\\Everlast','G:\\SteamLibrary\\steamapps\\common\\Everlast')",
+    "foreach ($p in $cands) { if (Test-Path (Join-Path $p 'GameAssembly.dll')) { $evDir = $p; break } }",
+    "if (-not $evDir) {",
+    "  foreach ($vdf in @('C:\\Program Files (x86)\\Steam\\steamapps\\libraryfolders.vdf','C:\\Steam\\steamapps\\libraryfolders.vdf')) {",
+    "    if (Test-Path $vdf) {",
+    "      Select-String -Path $vdf -Pattern '\"path\"\\s+\"([^\"]+)\"' | ForEach-Object {",
+    "        $c = Join-Path ($_.Matches.Groups[1].Value -replace '\\\\\\\\','\\') 'steamapps\\common\\Everlast'",
+    "        if (Test-Path (Join-Path $c 'GameAssembly.dll')) { $evDir = $c }",
+    "      }",
+    "    }",
+    "  }",
+    "}",
+    "if (-not $evDir) {",
+    "  Add-Type -AssemblyName System.Windows.Forms",
+    "  $dlg = New-Object System.Windows.Forms.FolderBrowserDialog",
+    "  $dlg.Description = 'Select your main Everlast Steam folder (containing GameAssembly.dll)'",
+    "  if ($dlg.ShowDialog() -eq 'OK' -and (Test-Path (Join-Path $dlg.SelectedPath 'GameAssembly.dll'))) { $evDir = $dlg.SelectedPath }",
+    "  else { Write-Host '[ERROR] Could not find Everlast folder.' -ForegroundColor Red; return }",
+    "}",
+    "function Patch-At($fs, $bs, [long]$off, $b, [int]$len) {",
+    "  if ($null -eq $b) {",
+    "    $buf = [byte[]]::new($len)",
+    "    [void]$bs.Seek($off, 0); [void]$bs.Read($buf, 0, $len)",
+    "    [void]$fs.Seek($off, 0); $fs.Write($buf, 0, $len)",
+    "  } else {",
+    "    [void]$fs.Seek($off, 0); $fs.Write([byte[]]$b, 0, $b.Count)",
+    "  }",
+    "}",
+    "function Edit-Bin($f, [scriptblock]$work) {",
+    "  $bak = $f + '.original_bak'",
+    "  if (-not (Test-Path $bak)) { Copy-Item $f $bak }",
+    "  $bs = [IO.File]::OpenRead($bak)",
+    "  $fs = [IO.File]::Open($f, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite)",
+    "  try { & $work $fs $bs } finally { $fs.Close(); $bs.Close() }",
+    "}",
+    `Edit-Bin (Join-Path $evDir 'GameAssembly.dll') { param($fs,$bs) Patch-At $fs $bs 0x23a2230 ${gaPts1} 6; Patch-At $fs $bs 0x23a29c0 ${gaPts2} 6; Patch-At $fs $bs 0x23a2de0 ${gaLock} 10; Patch-At $fs $bs 0x1bda84e ${gaBank1} 7; Patch-At $fs $bs 0x1bd1cf5 ${gaBank2} 10; Patch-At $fs $bs 0x35d7230 ${gaQual} 64 }`,
+    `Edit-Bin (Join-Path $evDir 'Everlast_Data\\StreamingAssets\\Server\\Windows\\Raptor.Game.exe') { param($fs,$bs) Patch-At $fs $bs 0x173cc40 ${srvPts} 6; Patch-At $fs $bs 0x173f260 ${srvProg} 24; Patch-At $fs $bs 0x16b6f30 ${srvQual} 64 }`,
+    `Edit-Bin (Join-Path $evDir 'Everlast_Data\\il2cpp_data\\Metadata\\global-metadata.dat') { param($fs,$bs) Patch-At $fs $bs 0x105f1ca ${metaLim} 1 }`,
+    `Write-Host '[SUCCESS] Patched Everlast executables in' $evDir '-> ${summaryText}' -ForegroundColor Green`
+  ].join('\r\n');
+
+  return { ps, summaryText };
+}
+
 $('patchFolderBtn').onclick = async () => {
   const note = $('patchFolderNote');
-  if (!window.showDirectoryPicker) {
-    note.textContent = 'Your browser does not support folder access. Run everlast_stack_mod.py instead.';
-    return;
-  }
+  const { ps, summaryText } = buildExecutablePatchPs1();
   try {
-    const dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-    note.textContent = 'Patching binaries in ' + dirHandle.name + '...';
-
-    // 1. GameAssembly.dll (Client Estate Points + Bank Box Withdrawals)
-    const dll = await readOrBackupBytes(dirHandle, 'GameAssembly.dll');
-    if ($('freeEstate').checked) {
-      dll.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x23a2230); // CalculateEstatePoints -> 100
-      dll.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x23a29c0); // CalculateMaxEstatePoints -> 100
-      dll.bytes.set([0x49, 0xc7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0xc0, 0xc3], 0x23a2de0); // IsPlotLockedByProgression -> false
-    }
-    if ($('bankBoxWithdraw').checked) {
-      dll.bytes.set([0xc6, 0x83, 0x00, 0x01, 0x00, 0x00, 0x01], 0x1bda84e); // ShowBankBox AllowWithdraw = true
-      dll.bytes.set([0xeb, 0x7f, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90], 0x1bd1cf5); // OnClick -> RequestWithdrawal
-    }
-    let qPatch = null;
-    if ($('customQuality').checked) {
-      qPatch = makeQualityPatch(
-        Number($('qMasterwork').value),
-        Number($('qFlawless').value),
-        Number($('qSuperior').value),
-        Number($('qFine').value),
-        Number($('qNormal').value)
-      );
-      dll.bytes.set(qPatch, 0x35d7230); // Formula.RollCraftQuality (Client)
-    }
-    let w = await dll.fileHandle.createWritable();
-    await w.write(dll.bytes);
-    await w.close();
-
-    // 2. Raptor.Game.exe (Server Estate Points + Progression Unlock)
-    const srv = await readOrBackupBytes(dirHandle, 'Everlast_Data/StreamingAssets/Server/Windows/Raptor.Game.exe');
-    if ($('freeEstate').checked) {
-      srv.bytes.set([0xb8, 0x64, 0x00, 0x00, 0x00, 0xc3], 0x173cc40); // Server CalculateEstatePoints -> 100
-      srv.bytes.set([0x31, 0xc0, 0x49, 0x89, 0x00, 0x49, 0x89, 0x40, 0x08, 0x49, 0x89, 0x40, 0x10, 0x49, 0x89, 0x40, 0x18, 0x49, 0x89, 0x40, 0x20, 0xff, 0xc0, 0xc3], 0x173f260); // Server TryCheckProgression -> true
-    }
-    if (qPatch) {
-      srv.bytes.set(qPatch, 0x16b6f30); // Formula.RollCraftQuality (Server)
-    }
-    w = await srv.fileHandle.createWritable();
-    await w.write(srv.bytes);
-    await w.close();
-
-    // 3. global-metadata.dat (Craft Many slider limit)
-    const meta = await readOrBackupBytes(dirHandle, 'Everlast_Data/il2cpp_data/Metadata/global-metadata.dat');
-    meta.bytes[0x105f1ca] = $('craftMany').checked ? 200 : 60;
-    w = await meta.fileHandle.createWritable();
-    await w.write(meta.bytes);
-    await w.close();
-
-    note.innerHTML = '<b>Done!</b> Patched <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code> (with <code>.original_bak</code> backups).';
+    await navigator.clipboard.writeText(ps);
+    $('patchFolderBtn').textContent = 'Copied! Paste into PowerShell (Win+X -> Terminal)';
+    note.innerHTML = `<b>Copied to clipboard!</b><br>1. Press <b>Win + X</b> and click <b>Terminal</b> (or <b>PowerShell</b>).<br>2. Press <b>Ctrl + V</b> and hit <b>Enter</b>.<br><b>Configured patches:</b> <code>${summaryText}</code>`;
   } catch (err) {
-    if (err.name !== 'AbortError') {
-      note.textContent = 'Could not patch binaries (make sure Everlast is closed and you picked the main Everlast folder): ' + err.message;
-    }
+    note.textContent = 'Could not copy automatically. Click "Download PATCH_EVERLAST.bat" instead.';
   }
 };
+
+if ($('downloadBatBtn')) {
+  $('downloadBatBtn').onclick = () => {
+    const note = $('patchFolderNote');
+    const { ps, summaryText } = buildExecutablePatchPs1();
+    // Encode UTF-16LE base64 for powershell -EncodedCommand
+    const u16 = new Uint8Array(ps.length * 2);
+    for (let i = 0; i < ps.length; i++) {
+      const code = ps.charCodeAt(i);
+      u16[i * 2] = code & 0xff;
+      u16[i * 2 + 1] = (code >> 8) & 0xff;
+    }
+    let bin = '';
+    for (let i = 0; i < u16.length; i++) bin += String.fromCharCode(u16[i]);
+    const b64 = btoa(bin);
+    const bat = `@echo off\r\ntitle Everlast Mod Kit - Executable Patcher\r\necho Applying Everlast executable patches...\r\npowershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand ${b64}\r\necho.\r\npause\r\n`;
+    const blob = new Blob([bat], { type: 'application/octet-stream' });
+    triggerDownload(blob, 'PATCH_EVERLAST.bat');
+    note.innerHTML = `<b>Downloaded <code>PATCH_EVERLAST.bat</code>!</b> Double-click it to apply: <code>${summaryText}</code>`;
+  };
+}
 
 // ==========================================
 // WORLD SETTINGS TAB LOGIC
