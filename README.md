@@ -18,7 +18,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **Totem & Ichor Buffs:** Boost cleansing values, shorten the Feeling Full delay, and multiply Occultism XP gained from altars and shrines.
 - **World Rider Settings:** Edit world XP rates, gather rates, loot rates, difficulty, and death drop penalties for any existing world save.
 
-![The Everlast Mod Kit page](screenshots/contract.png)
+![The Everlast Mod Kit page](screenshots/contract-page.png)
 
 ## What you can change
 
