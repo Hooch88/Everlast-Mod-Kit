@@ -6,6 +6,8 @@
 **Mod Kit Repo:** `c:\Projects\GameMods\Everlast`  
 **Master Internals Map:** `c:\Projects\GameMods\Everlast\EVERLAST_INTERNALS_MAP.md`  
 
+> **RESOLVED 2026-11-04 (Claude):** Crafting restored. Both client crafting patches (`0x1e8041b`, `0x35d7230`) were reverted to vanilla in the installed `GameAssembly.dll`, and the rarity feature was removed from the Mod Kit. Its patcher now always restores those bytes. Crafting rarity is shelved: quality is rolled inside `Raptor.Game.exe` with no data-driven weights in any `.db`. Some VA/file-offset pairs below are inconsistent; verify before using.
+
 ---
 
 ## 1. Executive Summary & Immediate Unblock
@@ -164,3 +166,4 @@ Check `C:\Users\<user>\Documents\My Games\Everlast\Worlds\<WorldName>\save\gen-0
 - **Web Mod Kit & GUI:** [`c:\Projects\GameMods\Everlast\Everlast Mod Kit.html`](file:///c:/Projects/GameMods/Everlast/Everlast%20Mod%20Kit.html) — 3-tab browser GUI (Contract, Executables Patcher, World Rider).
 - **Steam Guide Text:** [`c:\Projects\GameMods\Everlast\steam-guide.txt`](file:///c:/Projects/GameMods/Everlast/steam-guide.txt)
 - **Repo README:** [`c:\Projects\GameMods\Everlast\README.md`](file:///c:/Projects/GameMods/Everlast/README.md)
+
