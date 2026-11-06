@@ -1417,6 +1417,7 @@ function closingRemark(totalChanges) {
 }
 
 function showReceipt(autoSaved = false) {
+  if (!readyStats) return;
   const { client, server } = readyStats;
   const rows = [
     ['Stacking rules changed', client.stackChanged, server.stackChanged],
@@ -1478,28 +1479,27 @@ $('seal').onclick = async () => {
     return;
   }
 
-  // If direct file handles are available (from Chrome/Edge), auto-save directly over the game files in place!
-  if (canSaveGameFiles()) {
-    try {
-      $('signNote').textContent = 'Saving directly into your Everlast folder...';
-      await saveOverFiles([[fileHandles.clientFile, readyFiles.client], [fileHandles.serverFile, readyFiles.server]]);
-      for (const id of ['clientFile', 'serverFile']) setInputFile($(id), await fileHandles[id].getFile());
-      await readAttachedTerms();
-      seal.classList.add('done');
-      seal.textContent = 'Sealed & Saved';
-      $('signNote').innerHTML = '<b>Saved directly into your game folder!</b> Your new terms apply the next time you start Everlast.';
-      showReceipt(true);
-      return;
-    } catch(err) {
-      console.warn('Auto-save error, showing manual save/download options:', err);
-      showSaveError(err);
-    }
-  }
-
   seal.classList.add('done');
   seal.textContent = 'Sealed';
   $('signNote').innerHTML = '<b>Signed.</b> Change any term above to sign again.';
   showReceipt(false);
+
+  // If direct file handles are available (from Chrome/Edge), auto-save directly in place!
+  if (canSaveGameFiles()) {
+    try {
+      $('signNote').textContent = 'Saving directly into your Everlast folder...';
+      await saveOverFiles([[fileHandles.clientFile, readyFiles.client], [fileHandles.serverFile, readyFiles.server]]);
+      seal.textContent = 'Sealed & Saved';
+      $('signNote').innerHTML = '<b>Saved directly into your game folder!</b> Your new terms apply the next time you start Everlast.';
+      $('saveBtn').textContent = 'Saved to game folder (Click to save again)';
+      $('deliveryIntro').hidden = true;
+      $('deliverySteps').hidden = true;
+    } catch(err) {
+      console.warn('Auto-save error, showing manual save/download options:', err);
+      showSaveError(err);
+      $('downloadStep').hidden = false;
+    }
+  }
 };
 
 $('backupBtn').onclick = () => {
