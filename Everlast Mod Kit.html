@@ -464,7 +464,7 @@
 
       <section class="receipt" id="receipt" hidden>
         <h2>Receipt</h2>
-        <p class="plain">Your changes are ready, but nothing is saved yet. They only exist in this page until you save them below. Your game folder hasn't changed.</p>
+        <p class="plain" id="receiptIntro">Your changes are ready, but nothing is saved yet. They only exist in this page until you save them below. Your game folder hasn't changed.</p>
         <table class="tally">
           <thead><tr><th>Change</th><th>Item file</th><th>Server file</th></tr></thead>
           <tbody id="tallyBody"></tbody>
@@ -1448,8 +1448,10 @@ function showReceipt(autoSaved = false) {
   $('downloadStep').hidden = direct;
   if (autoSaved) {
     $('saveBtn').textContent = 'Saved to game folder (Click to save again)';
+    if ($('receiptIntro')) $('receiptIntro').innerHTML = '<b>Your changes have been saved directly into your Everlast game folder!</b> Below is the breakdown of everything updated:';
   } else {
     $('saveBtn').textContent = 'Save to my game folder';
+    if ($('receiptIntro')) $('receiptIntro').textContent = "Your changes are ready, but nothing is saved yet. They only exist in this page until you save them below. Your game folder hasn't changed.";
   }
   $('deliveryIntro').hidden = true;
   $('deliverySteps').hidden = true;
@@ -1492,6 +1494,7 @@ $('seal').onclick = async () => {
       seal.textContent = 'Sealed & Saved';
       $('signNote').innerHTML = '<b>Saved directly into your game folder!</b> Your new terms apply the next time you start Everlast.';
       $('saveBtn').textContent = 'Saved to game folder (Click to save again)';
+      if ($('receiptIntro')) $('receiptIntro').innerHTML = '<b>Your changes have been saved directly into your Everlast game folder!</b> Below is the breakdown of everything updated:';
       $('deliveryIntro').hidden = true;
       $('deliverySteps').hidden = true;
     } catch(err) {
@@ -1534,6 +1537,7 @@ $('saveBtn').onclick = async () => {
   for (const id of ids) setInputFile($(id), await fileHandles[id].getFile());
   await readAttachedTerms();
   $('signNote').innerHTML = '<b>Saved to your game folder.</b> Your new terms apply the next time you start Everlast.';
+  if ($('receiptIntro')) $('receiptIntro').innerHTML = '<b>Your changes have been saved directly into your Everlast game folder!</b> Below is the breakdown of everything updated:';
   $('signNote').scrollIntoView({ block: 'center' });
 };
 
