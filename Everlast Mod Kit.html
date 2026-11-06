@@ -878,20 +878,46 @@ function setInputFile(input, file) {
 function wireDrop(slot, input) {
   slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('dragging'); });
   slot.addEventListener('dragleave', () => slot.classList.remove('dragging'));
-  slot.addEventListener('drop', e => {
+  slot.addEventListener('drop', async e => {
     e.preventDefault();
     slot.classList.remove('dragging');
     if (!e.dataTransfer.files.length) return;
-    const handle = e.dataTransfer.items[0]?.getAsFileSystemHandle?.();
-    fileHandles[input.id] = null;
-    handle?.then(h => { if (h?.kind === 'file') fileHandles[input.id] = h; }).catch(console.warn);
+    const item = e.dataTransfer.items[0];
+    if (item && item.getAsFileSystemHandle) {
+      try {
+        const handle = await item.getAsFileSystemHandle();
+        if (handle && handle.kind === 'file') fileHandles[input.id] = handle;
+      } catch(err) { console.warn(err); }
+    }
     setInputFile(input, e.dataTransfer.files[0]);
     showAttached(slot, input, EXPECTED_FILES[input.id]);
     readAttachedTerms();
   });
 
+  input.addEventListener('click', () => { fileHandles[input.id] = null; });
+  slot.addEventListener('click', async e => {
+    if (!window.showOpenFilePicker || e.target === input) return;
+    e.preventDefault();
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{
+          description: 'Everlast Database File (*.db)',
+          accept: { 'application/octet-stream': [input.accept || '.db'] }
+        }]
+      });
+      if (handle) {
+        fileHandles[input.id] = handle;
+        const file = await handle.getFile();
+        setInputFile(input, file);
+        showAttached(slot, input, EXPECTED_FILES[input.id]);
+        readAttachedTerms();
+      }
+    } catch(err) {
+      if (err.name !== 'AbortError') input.click();
+    }
+  });
+
   input.addEventListener('change', () => {
-    fileHandles[input.id] = null;
     showAttached(slot, input, EXPECTED_FILES[input.id]);
     readAttachedTerms();
   });
@@ -1390,7 +1416,7 @@ function closingRemark(totalChanges) {
   return 'Signed and sealed.';
 }
 
-function showReceipt() {
+function showReceipt(autoSaved = false) {
   const { client, server } = readyStats;
   const rows = [
     ['Stacking rules changed', client.stackChanged, server.stackChanged],
@@ -1419,6 +1445,11 @@ function showReceipt() {
   const direct = canSaveGameFiles();
   $('saveStep').hidden = !direct;
   $('downloadStep').hidden = direct;
+  if (autoSaved) {
+    $('saveBtn').textContent = 'Saved to game folder (Click to save again)';
+  } else {
+    $('saveBtn').textContent = 'Save to my game folder';
+  }
   $('deliveryIntro').hidden = true;
   $('deliverySteps').hidden = true;
   $('receipt').hidden = false;
@@ -1446,10 +1477,29 @@ $('seal').onclick = async () => {
     checkReady();
     return;
   }
+
+  // If direct file handles are available (from Chrome/Edge), auto-save directly over the game files in place!
+  if (canSaveGameFiles()) {
+    try {
+      $('signNote').textContent = 'Saving directly into your Everlast folder...';
+      await saveOverFiles([[fileHandles.clientFile, readyFiles.client], [fileHandles.serverFile, readyFiles.server]]);
+      for (const id of ['clientFile', 'serverFile']) setInputFile($(id), await fileHandles[id].getFile());
+      await readAttachedTerms();
+      seal.classList.add('done');
+      seal.textContent = 'Sealed & Saved';
+      $('signNote').innerHTML = '<b>Saved directly into your game folder!</b> Your new terms apply the next time you start Everlast.';
+      showReceipt(true);
+      return;
+    } catch(err) {
+      console.warn('Auto-save error, showing manual save/download options:', err);
+      showSaveError(err);
+    }
+  }
+
   seal.classList.add('done');
   seal.textContent = 'Sealed';
   $('signNote').innerHTML = '<b>Signed.</b> Change any term above to sign again.';
-  showReceipt();
+  showReceipt(false);
 };
 
 $('backupBtn').onclick = () => {
