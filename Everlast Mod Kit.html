@@ -764,11 +764,6 @@ function syncAmendments() {
 // Terms always start from the attached files. With no files, they stay locked.
 function showTerms(terms) {
   loadedTerms = terms;
-  if (terms) {
-    ['Masterwork', 'Flawless', 'Superior', 'Fine', 'Normal'].forEach(t => {
-      terms['q' + t] = Number($('q' + t).value);
-    });
-  }
   TERM_BOXES.forEach(id => {
     const already = !!terms && terms[id];
     $(id).checked = already;
