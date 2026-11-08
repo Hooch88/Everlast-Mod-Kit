@@ -1,0 +1,192 @@
+STEAM GUIDE DRAFT: EVERLAST MOD KIT
+Paste each part into its matching box in Steam's guide editor.
+Lines in [[double brackets]] are notes to you. Replace or delete them before publishing.
+
+
+============================================================
+GUIDE TITLE
+============================================================
+Everlast Mod Kit: Remove Curse, Stack Items, Free Estate Build, Craft Many 200, Change World Settings
+
+
+============================================================
+GUIDE DESCRIPTION
+============================================================
+A free tool that runs as a single web page or automated python patcher. Build your estate for free with unlimited estate points, craft up to 200 items in one batch, remove curse sources, raise stack sizes, speed up crafting, strengthen ichor/totems, boost progression and alter world rates and difficulty. Nothing to install, and you can undo your changes anytime.
+
+
+============================================================
+SECTION 1 TITLE
+============================================================
+What It Does
+
+
+============================================================
+SECTION 1 TEXT
+============================================================
+Everlast Mod Kit lets you change how Everlast plays without installing anything. It's a single web page that you download and open in your browser. It runs on your PC, and your files are never uploaded.
+
+[previewimg=48467705;sizeThumb,floatLeft;modkit11.3.26.png][/previewimg]
+
+[h1]Estate and Bank Box Upgrades[/h1]
+[list]
+[*]Free Estate Building: All estate plots, house styles, decorations, and building upgrades require zero materials (ItemsForUpgrade costs waived)
+[*]100 Estate Points & Progression Unlock: Start with 100 Estate Points and remove regional progression locks so you can build out your full estate immediately
+[*]Bank Box Withdrawals: Pull and withdraw items directly from Bank Boxes (drag or left-click) just like a full Bank
+[/list]
+
+[h1]Crafting and Mob Spawn Timers[/h1]
+[list]
+[*]Craft Many Limit (200 Items): Increases the crafting batch slider limit to 200 items per craft (vanilla is capped at 30)
+[*]Adjustable Mob Spawn Timers: Scale monster and pack respawn delays across all 509 NPCs (e.g. 2x faster respawns)
+[*]Speed up normal crafting (Focused Craft minigames stay the same)
+[/list]
+
+[h1]Curse and Stacking[/h1]
+[list]
+[*]Remove curse from gathering, combat, picking up or stealing items, and crafting
+[*]Make totems and ichor clear more curse
+[*]Shorten the Feeling Full wait after using ichor or totems
+[*]Make peddlers pay the full General Store rate when you sell to them
+[*]Let meals, potions, moulds and unstrung bows stack
+[*]Raise stack sizes for ores, bars, milk, logs and fish
+[/list]
+
+[h1]World Settings & Progression[/h1]
+[list]
+[*]10x Regional Progression Points on Desolate Zones and Drop-offs
+[*]3x Altar & Shrine EXP rewards when sacrificing or purifying
+[*]XP, gathering and loot rates
+[*]Difficulty and death penalty adjustments
+[*]PvP toggle
+[/list]
+
+[b]Pick only what you want.[/b] Every option is separate, and the page shows what your files currently say before you change anything.
+
+[b]Credit:[/b] Credit to StoneAndTimber for inspiration to flesh this mod out.
+
+
+============================================================
+SECTION 2 TITLE
+============================================================
+Before You Start
+
+
+============================================================
+SECTION 2 TEXT
+============================================================
+[list]
+[*]This is an unofficial tool, made for [b]solo and private worlds[/b].
+[*]Use [b]Chrome or Edge[/b] if you can. They can save straight to your game folder. Other browsers download the files for you to move yourself.
+[*]You can also run the 1-click Python script [b]everlast_stack_mod.py[/b] for instant automated patching of all files (databases, metadata, GameAssembly).
+[*]Back up your Worlds folder and try your changes on a test world first. In newer versions it's in [b]%LOCALAPPDATA%\InSpades\Everlast\Worlds[/b] (or [b]Documents\My Games\Everlast\Worlds[/b] on older versions).
+[*]Compatible with game patch 1464 (v0.13005.0) and later.
+[/list]
+
+
+============================================================
+SECTION 3 TITLE
+============================================================
+Applying Changes via the Web Tool
+
+
+============================================================
+SECTION 3 TEXT
+============================================================
+Download and open [b]Everlast Mod Kit.html[/b] in your browser. The tool features three dedicated tabs:
+
+[h1]Tab 1: Game Executables (No Uploads Needed!)[/h1]
+If you want to customize [b]100 Estate Points[/b], [b]Craft Many 200[/b], or [b]Bank Box Access[/b]:
+[olist]
+[*]Open the [b]Game Executables[/b] tab at the top.
+[*]Click [b]Copy 1-Click PowerShell Command[/b], press [b]Win + X[/b] -> open [b]Terminal[/b] (or [b]PowerShell[/b]), paste ([b]Ctrl + V[/b]), and hit [b]Enter[/b].
+[*]Or click [b]Download PATCH_EVERLAST.bat[/b] and double-click the file!
+[*]It automatically detects your Steam folder, creates safe [b].original_bak[/b] backups, and applies the changes in under a second.
+[/olist]
+
+[h1]Tab 2: The Contract (Databases & Rules)[/h1]
+To change curse rules, stack sizes, prices, or respawns:
+[olist]
+[*]Close Everlast.
+[*]Drag or choose your two database files:
+[list]
+[*]Assets\Database\Definitions\[b]ItemDefs.db[/b]
+[*]Everlast_Data\StreamingAssets\Server\Windows\Raptor.Data\[b]Raptor.Game.db[/b]
+[/list]
+[*]Tick the terms you want to strike out (e.g. No Gathering Curse, 500x Stacks, Fair Peddlers).
+[*]Click [b]Sign and seal[/b], then [b]Save to my game folder[/b] (or download modded files).
+[/olist]
+
+[h1]Tab 3: World Rider (Difficulty & Rates)[/h1]
+To adjust XP, gathering, loot multipliers, or keep inventory on death:
+[olist]
+[*]Open the [b]World Rider[/b] tab and add your world's [b]worldsettings.json[/b].
+[*]Customize your settings and click [b]Seal this world[/b].
+[/olist]
+
+[[Add image here: receipt.png]]
+
+
+============================================================
+SECTION 4 TITLE
+============================================================
+Automated One-Click Patching (Python)
+
+
+============================================================
+SECTION 4 TEXT
+============================================================
+If you want all features (free estate build, unlimited estate points, craft many 200 limit, bank box withdrawals, curse removal, and stacking) applied in one click:
+
+[olist]
+[*]Close Everlast.
+[*]Run [b]PATCH_EVERLAST.bat[/b] or execute:
+[code]python everlast_stack_mod.py[/code]
+[*]The script will automatically back up and patch:
+- [b]ItemDefs.db[/b] & [b]Raptor.Game.db[/b] (stacking & fair peddlers)
+- [b]ComponentSetDefs.db[/b] (curse removal & 10x progression)
+- [b]EstatePlotDefs.db[/b] (zero material costs)
+- [b]global-metadata.dat[/b] (Craft Many slider ceiling = 200)
+- [b]GameAssembly.dll[/b] & [b]Raptor.Game.exe[/b] (100 Estate Points, progression unlock, and Bank Box withdrawals)
+[/olist]
+
+
+============================================================
+SECTION 5 TITLE
+============================================================
+World Settings
+
+
+============================================================
+SECTION 5 TEXT
+============================================================
+The game locks these settings once a world is created, but your local server reads them from a file you can change.
+
+[olist]
+[*][b]Close Everlast[/b], including its local server.
+[*]Open the [b]World Rider[/b] tab on the page.
+[*]Drag in your world's file:
+%LOCALAPPDATA%\InSpades\Everlast\Worlds\YourWorldName\[b]worldsettings.json[/b] (or Documents\My Games\Everlast\Worlds\... on older patches)
+[*]Change what you want. The page shows your world's current settings, and only saves the ones you change.
+[*]Click [b]Seal this world[/b].
+[/olist]
+
+Your new settings apply the next time you enter the world.
+
+[[Add image here: world.png]]
+
+
+============================================================
+SECTION 6 TITLE
+============================================================
+Undoing Changes
+
+
+============================================================
+SECTION 6 TEXT
+============================================================
+[b]To restore vanilla via backups:[/b]
+Backups are automatically saved as [b].original_bak[/b] alongside patched files and inside the [b]ModBackups[/b] folder. Simply restore them.
+
+[b]To restore via Steam:[/b]
+In Steam, right-click Everlast and choose [b]Properties[/b], then [b]Installed Files[/b], then [b]Verify integrity of game files[/b]. Steam will restore the original files.

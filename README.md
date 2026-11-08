@@ -76,7 +76,7 @@ Double-click `Everlast Mod Kit.html` in your browser. The tool is organized into
    - Click **Sign and seal**, then **Save to my game folder** (or download modded files).
 
 3. **World Rider Tab (World Rules):**
-   - Drag or pick `worldsettings.json` from `Documents\My Games\Everlast\Worlds\<YourWorld>\`.
+   - Drag or pick `worldsettings.json` from `%LOCALAPPDATA%\InSpades\Everlast\Worlds\<YourWorld>\` (or `Documents\My Games\Everlast\Worlds\` on older versions).
    - Adjust XP, gathering, loot rates, difficulty, and death penalties (e.g. Keep Inventory).
    - Click **Seal this world**.
 
@@ -100,7 +100,7 @@ For modders, developers, and technical details on schemas, exact byte offsets, I
 
 - This is an unofficial tool, made for solo and private worlds.
 - Compatible with game patch 1464 (v0.13005.0) and later.
-- Back up your Worlds folder (`Documents\My Games\Everlast\Worlds`) before applying changes.
+- Back up your Worlds folder (`%LOCALAPPDATA%\InSpades\Everlast\Worlds` or `Documents\My Games\Everlast\Worlds`) before applying changes.
 
 ## Credits
 

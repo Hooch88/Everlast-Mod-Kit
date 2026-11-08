@@ -579,7 +579,7 @@
         <p class="plain">The game locks these settings after you create a world, but your local server reads them from this file. Close Everlast first, then drag the file onto this box. You can also click the box to choose it.</p>
         <label class="slot wide" id="worldSlot">
           <b>World settings file</b>
-          <span class="slot-path">Documents\My Games\Everlast\Worlds\&lt;YourWorldName&gt;\worldsettings.json</span>
+          <span class="slot-path">%LOCALAPPDATA%\InSpades\Everlast\Worlds\&lt;YourWorldName&gt;\worldsettings.json</span>
           <span class="slot-state">Drop worldsettings.json here</span>
           <input type="file" id="worldFile" accept=".json">
         </label>
@@ -1844,7 +1844,7 @@ $('saveWorldBtn').onclick = async () => {
   setTimeout(() => URL.revokeObjectURL(url), 15000);
 
   worldLog(`${saveProblem}Sealed. ${currentWorldFileName} is in your downloads.\n` +
-    `Replace the file in Documents\\My Games\\Everlast\\Worlds\\<WorldName>\\ and your new terms apply the next time you enter the world.`);
+    `Replace the file in %LOCALAPPDATA%\\InSpades\\Everlast\\Worlds\\<WorldName>\\ and your new terms apply the next time you enter the world.`);
 };
 
 showTerms(null);
