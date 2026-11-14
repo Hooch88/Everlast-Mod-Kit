@@ -82,6 +82,13 @@ Double-click `Everlast Mod Kit.html` in your browser. The tool is organized into
 
 ---
 
+## Technical Internals & Knowledge Map
+
+For modders, developers, and technical details on schemas, exact byte offsets, IL2CPP method tokens, and binary patches, see:
+- [`EVERLAST_INTERNALS_MAP.md`](EVERLAST_INTERNALS_MAP.md)
+
+---
+
 ## Undoing a change
 
 - **From Backup:** Backups are created automatically with `.original_bak` extensions next to patched binaries and databases, and inside `ModBackups\`.
