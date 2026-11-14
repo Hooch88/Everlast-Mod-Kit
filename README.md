@@ -10,7 +10,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **100 Estate Points & Progression Unlock:** Grants 100 available Estate Points and unlocks construction order across all floors (client UI & server authoritative checks).
 - **Bank Box Withdrawals:** Pull and withdraw items directly from Bank Boxes (drag or left-click) just like a full Bank.
 - **Craft Many Batch Limit (200 Max):** Raises the batch crafting slider ceiling from 30 up to 200 items in a single craft.
-- **Adjustable Mob Spawn Timers:** Scale monster and pack respawn delays across all 509 NPCs (e.g., 2x faster respawns).
+- **Adjustable Mob Spawn Timers:** Scale monster and pack respawn delays across every NPC (e.g., 2x faster respawns).
 - **Complete Curse Removal:** Eliminate curses gained from gathering nodes, combat attacks/spells, stealing/looting world items, and crafting.
 - **Item Stacking:** Expand resources (ores, bars, logs, fish) and non-stackables (cooked meals, potions, moulds, unstrung bows) to stacks of 100.
 - **Faster Crafting:** Speed up regular crafting station timers without affecting Focused Craft minigames.
@@ -76,9 +76,9 @@ Double-click `Everlast Mod Kit.html` in your browser. The tool is organized into
    - Click **Sign and seal**, then **Save to my game folder** (or download modded files).
 
 3. **World Rider Tab (World Rules):**
-   - Drag or pick `worldsettings.json` from `%LOCALAPPDATA%\InSpades\Everlast\Worlds\<YourWorld>\` (or `Documents\My Games\Everlast\Worlds\` on older versions).
+   - Drag or pick `worldsettings.json` from `C:\Users\{username}\AppData\Local\InSpades\Everlast\Worlds\{userworldname}\` (or `Documents\My Games\Everlast\Worlds\` on older versions). `AppData` is a hidden folder: press **Win + R**, type `%LOCALAPPDATA%\InSpades\Everlast\Worlds` and press Enter to open it.
    - Adjust XP, gathering, loot rates, difficulty, and death penalties (e.g. Keep Inventory).
-   - Click **Seal this world**.
+   - Click **Seal this world**, then double-click the downloaded `APPLY_WORLD_SETTINGS.bat` (or press **Or copy the command instead** and paste it into PowerShell). It finds your world and saves the new terms into it for you, and keeps the original next to it as `worldsettings.json.original_bak`. Chrome and Edge won't let a web page write into `AppData`, so this is the one-click version of "Save to my game folder". Close Everlast first.
 
 ---
 
@@ -92,6 +92,7 @@ For modders, developers, and technical details on schemas, exact byte offsets, I
 ## Undoing a change
 
 - **From Backup:** Backups are created automatically with `.original_bak` extensions next to patched binaries and databases, and inside `ModBackups\`.
+- **Restore vanilla:** The **Download RESTORE_VANILLA.bat** button writes the original bytes straight back (it checks the game version first), so it keeps working after a game update.
 - **Steam Verify:** In Steam, right-click Everlast and choose **Properties** -> **Installed Files** -> **Verify integrity of game files**.
 
 ---
@@ -99,8 +100,9 @@ For modders, developers, and technical details on schemas, exact byte offsets, I
 ## Good to know
 
 - This is an unofficial tool, made for solo and private worlds.
-- Compatible with game patch 1464 (v0.13005.0) and later.
-- Back up your Worlds folder (`%LOCALAPPDATA%\InSpades\Everlast\Worlds` or `Documents\My Games\Everlast\Worlds`) before applying changes.
+- Built for Everlast **v0.13021.0**. The executable patches (the **Game Executables** tab and the Python patcher) check the exact bytes they are about to change and refuse to touch the game on any other version, so after a game update they pause safely until the kit is updated. Nothing is written in that case. The database features (**The Contract**, **World Rider**) read plain tables and are far less version-sensitive.
+- **Bank Box Withdrawals** after the v0.13021.0 update: the client side is patched, but the server's item handler changed in that update and has not been confirmed in game yet. If you can pull items out of a Bank Box, it works; if the server refuses, leave that option off.
+- Back up your Worlds folder (`C:\Users\{username}\AppData\Local\InSpades\Everlast\Worlds` or `Documents\My Games\Everlast\Worlds`) before applying changes.
 
 ## Credits
 
