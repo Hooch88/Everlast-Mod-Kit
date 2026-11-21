@@ -100,7 +100,7 @@ For modders, developers, and technical details on schemas, exact byte offsets, I
 ## Good to know
 
 - This is an unofficial tool, made for solo and private worlds.
-- Built for Everlast **v0.13021.0**. The executable patches (the **Game Executables** tab and the Python patcher) check the exact bytes they are about to change and refuse to touch the game on any other version, so after a game update they pause safely until the kit is updated. Nothing is written in that case. The database features (**The Contract**, **World Rider**) read plain tables and are far less version-sensitive.
+- Built for Everlast **v0.13022.0**. The executable patches (the **Game Executables** tab and the Python patcher) check the exact bytes they are about to change and refuse to touch the game on any other version, so after a game update they pause safely until the kit is updated. Nothing is written in that case. The database features (**The Contract**, **World Rider**) read plain tables and are far less version-sensitive.
 - **Bank Box Withdrawals** after the v0.13021.0 update: the client side is patched, but the server's item handler changed in that update and has not been confirmed in game yet. If you can pull items out of a Bank Box, it works; if the server refuses, leave that option off.
 - Back up your Worlds folder (`C:\Users\{username}\AppData\Local\InSpades\Everlast\Worlds` or `Documents\My Games\Everlast\Worlds`) before applying changes.
 
