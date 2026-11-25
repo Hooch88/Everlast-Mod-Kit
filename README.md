@@ -12,7 +12,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **Craft Many Batch Limit (200 Max):** Raises the batch crafting slider ceiling from 30 up to 200 items in a single craft.
 - **Adjustable Mob Spawn Timers:** Scale monster and pack respawn delays across every NPC (e.g., 2x faster respawns).
 - **Complete Curse Removal:** Eliminate curses gained from gathering nodes, combat attacks/spells, stealing/looting world items, and crafting.
-- **Item Stacking:** Expand resources (ores, bars, logs, fish) and non-stackables (cooked meals, potions, moulds, unstrung bows) to stacks of 100.
+- **Item Stacking:** Expand resources (ores, bars, logs, fish) to stacks of 100, and separately let meals and potions, and unstrung bows, crossbows, wands and staves stack. Each has its own checkbox and size. Tools never stack (a stacked Tinderbox can't light a campfire).
 - **Faster Crafting:** Speed up regular crafting station timers without affecting Focused Craft minigames.
 - **Fair Peddler Payouts:** Make roaming peddlers pay the full 100% General Store sell rate.
 - **Totem & Ichor Buffs:** Boost cleansing values, shorten the Feeling Full delay, and multiply Occultism XP gained from altars and shrines.
@@ -34,7 +34,7 @@ There's nothing to install, and nothing is uploaded. Your files stay on your PC.
 - **Progression & EXP Boosts:** 10x progression rewards on Desolate Zones & drop-offs, plus 3x sacrifice/purification EXP at altars and shrines.
 - **Crafting Speed:** Speed up normal crafting timers.
 - **Fair Peddlers:** Make peddlers pay the full General Store rate when you sell to them.
-- **Item Stacking:** Let meals, potions, moulds, unstrung bows, and resource items stack to 100.
+- **Item Stacking:** Let meals and potions, unstrung bows, crossbows, wands and staves, and resource items stack, each with its own size.
 
 ![The ichor, Feeling Full, crafting and peddler settings](screenshots/settings.png)
 

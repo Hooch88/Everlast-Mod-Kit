@@ -371,14 +371,23 @@
         <div class="clause">
           <span class="num">&sect;6</span>
           <div>
-            <label class="term"><input type="checkbox" id="stackNewItems"><span class="box"></span><s>Meals, potions and tools shall not stack.</s></label>
-            <p class="amend" id="newStackAmend">Let them stack to <input class="ink-num" type="number" id="newStackSize" min="2" max="999" value="100" aria-label="Stack size for meals, potions and tools"></p>
-            <p class="plain">Lets cooked meals, potions, moulds and unstrung bows stack</p>
+            <label class="term"><input type="checkbox" id="stackFood"><span class="box"></span><s>Meals and potions shall not stack.</s></label>
+            <p class="amend" id="foodStackAmend">Let them stack to <input class="ink-num" type="number" id="foodStackSize" min="2" max="999" value="100" aria-label="Stack size for meals and potions"></p>
+            <p class="plain">Lets cooked meals, pies, potions and their ingredients stack. Tools never stack.</p>
           </div>
         </div>
 
         <div class="clause">
           <span class="num">&sect;7</span>
+          <div>
+            <label class="term"><input type="checkbox" id="stackWeapons"><span class="box"></span><s>Unstrung bows, crossbows, wands and staves shall not stack.</s></label>
+            <p class="amend" id="weaponStackAmend">Let them stack to <input class="ink-num" type="number" id="weaponStackSize" min="2" max="999" value="100" aria-label="Stack size for unstrung and unenchanted weapons"></p>
+            <p class="plain">Lets unstrung bows and crossbows, and unenchanted wands and staves stack. Leave this struck if you craft them one at a time for better quality.</p>
+          </div>
+        </div>
+
+        <div class="clause">
+          <span class="num">&sect;8</span>
           <div>
             <label class="term"><input type="checkbox" id="upgradeResources"><span class="box"></span><s>Resources shall stack no higher than 5.</s></label>
             <p class="amend" id="resourceAmend">Let them stack to <input class="ink-num" type="number" id="resourceStackSize" min="5" max="999" value="100" aria-label="Stack size for resources"></p>
@@ -387,17 +396,17 @@
         </div>
 
         <figure class="exhibit">
-          <figcaption>Exhibit A: an example of what &sect;7 does</figcaption>
+          <figcaption>Exhibit A: an example of what &sect;8 does</figcaption>
           <p class="count"><strong id="slots">2</strong><span>of 30 backpack slots used by 150 ore</span></p>
           <div class="pack-grid" id="packGrid" aria-hidden="true"></div>
-          <p class="plain">Ore is just an example. &sect;7 changes every resource listed above.</p>
+          <p class="plain">Ore is just an example. &sect;8 changes every resource listed above.</p>
           <label class="pack-try">Try a stack size
             <input type="range" id="packRange" min="5" max="200" value="100">
           </label>
         </figure>
 
         <div class="clause open">
-          <span class="num">&sect;8</span>
+          <span class="num">&sect;9</span>
           <div>
             <div class="rate-row">
               <span>Crafting shall run at</span>
@@ -409,7 +418,7 @@
         </div>
 
         <div class="clause">
-          <span class="num">&sect;9</span>
+          <span class="num">&sect;10</span>
           <div>
             <label class="term"><input type="checkbox" id="fairPeddler"><span class="box"></span><s>By default, peddlers pay half the General Store rate.</s><span class="hand">pay up</span></label>
             <p class="plain">Strike this so peddlers pay the full General Store rate when you sell to them. What they charge you stays the same.</p>
@@ -417,7 +426,7 @@
         </div>
 
         <div class="clause">
-          <span class="num">&sect;10</span>
+          <span class="num">&sect;11</span>
           <div>
             <label class="term"><input type="checkbox" id="freeEstate"><span class="box"></span><s>Estate plots and buildings require hard-earned materials to build.</s><span class="hand">free build</span></label>
             <p class="plain">Strike this so all estate plots, house styles, decorations, and building upgrades require zero materials (ItemsForUpgrade waived).</p>
@@ -425,7 +434,7 @@
         </div>
 
         <div class="clause">
-          <span class="num">&sect;11</span>
+          <span class="num">&sect;12</span>
           <div>
             <label class="term"><input type="checkbox" id="craftMany"><span class="box"></span><s>Craft Many is capped at 30 items per batch.</s><span class="hand">200 max</span></label>
             <p class="plain">Strike this to boost the batch crafting slider up to 200 items in global-metadata.dat.</p>
@@ -433,7 +442,7 @@
         </div>
 
         <div class="clause">
-          <span class="num">&sect;12</span>
+          <span class="num">&sect;13</span>
           <div>
             <label class="term"><input type="checkbox" id="bankBoxWithdraw"><span class="box"></span><s>Bank Boxes only accept deposits and refuse withdrawals.</s><span class="hand">open access</span></label>
             <p class="plain">Strike this so Bank Boxes allow pulling items out just like a full Bank (applied by everlast_stack_mod.py).</p>
@@ -441,7 +450,7 @@
         </div>
 
         <div class="clause open">
-          <span class="num">&sect;13</span>
+          <span class="num">&sect;14</span>
           <div>
             <div class="rate-row">
               <span>Monsters and NPCs shall respawn at</span>
@@ -485,11 +494,11 @@
           </li>
           <li id="binaryPatchStep">
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-              <button class="btn" id="patchFolderBtn" type="button">Copy Executable Patch Command (&sect;10, &sect;11, &sect;12)</button>
+              <button class="btn" id="patchFolderBtn" type="button">Copy Executable Patch Command (&sect;11, &sect;12, &sect;13)</button>
               <button class="btn secondary" id="downloadBatBtn" type="button">Download PATCH_EVERLAST.bat</button>
             </div>
             <p class="plain" id="patchFolderNote">
-              <b>Why this step is needed:</b> Most terms save into your <code>.db</code> database files above. However, 100 Estate Points (&sect;10), Craft Many up to 200 (&sect;11), and Bank Box Withdrawals (&sect;12) live inside <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code> (and web browsers block web pages from modifying <code>.dll</code> and <code>.exe</code> files directly).<br>
+              <b>Why this step is needed:</b> Most terms save into your <code>.db</code> database files above. However, 100 Estate Points (&sect;11), Craft Many up to 200 (&sect;12), and Bank Box Withdrawals (&sect;13) live inside <code>GameAssembly.dll</code>, <code>Raptor.Game.exe</code>, and <code>global-metadata.dat</code> (and web browsers block web pages from modifying <code>.dll</code> and <code>.exe</code> files directly).<br>
               <b>How to apply in 2 seconds (no installs needed):</b> Click <b>Copy Executable Patch Command</b> above, press <b>Win + X</b> &rarr; <b>Terminal (or PowerShell)</b>, paste (<b>Ctrl + V</b>), and hit <b>Enter</b>. Or click <b>Download PATCH_EVERLAST.bat</b> and double-click it. It auto-detects your Steam Everlast folder, creates <code>.original_bak</code> backups, and applies your exact settings!
             </p>
           </li>
@@ -675,9 +684,9 @@ let readyFiles = null;
 let readyStats = null;
 let loadedTerms = null;
 const fileHandles = {};
-const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackNewItems', 'upgradeResources', 'freeEstate', 'craftMany', 'bankBoxWithdraw'];
+const TERM_BOXES = ['noGatherCurse', 'noCombatCurse', 'noStealCurse', 'noCraftCurse', 'fairPeddler', 'stackFood', 'stackWeapons', 'upgradeResources', 'freeEstate', 'craftMany', 'bankBoxWithdraw'];
 const RATE_BOXES = ['totemMult', 'ichorMult', 'fullWait', 'occultXpMult', 'craftSpeed', 'mobRespawnSpeed'];
-const STACK_TERMS = [['stackNewItems', 'newStackSize', 'newStackAmend', 'newSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
+const STACK_TERMS = [['stackFood', 'foodStackSize', 'foodStackAmend', 'foodSize'], ['stackWeapons', 'weaponStackSize', 'weaponStackAmend', 'weaponSize'], ['upgradeResources', 'resourceStackSize', 'resourceAmend', 'resourceSize']];
 let currentWorldJson = null;
 let currentWorldFileName = "worldsettings.json";
 
@@ -713,7 +722,7 @@ function countChanges() {
   const terms = TERM_BOXES.filter(id => $(id).checked !== loadedTerms[id]).length;
   const sizes = STACK_TERMS.filter(([box, num, , size]) => $(box).checked && loadedTerms[box] && Number($(num).value) !== loadedTerms[size]).length;
   const rates = RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]).length;
-  return terms + sizes + rates;
+  return terms + sizes + rates + (loadedTerms.toolsStacked ? 1 : 0);
 }
 
 function checkReady() {
@@ -1003,6 +1012,15 @@ function isEligibleForStack(r) {
          !EXCLUDED_COMPONENTS.some(ex => comp.includes(ex));
 }
 
+// Which stack term an unstackable item belongs to. Null means it never stacks, which is where tools (Tinderbox, Hammer, Net, moulds) live:
+// they have to stay single items or the game says the tool is missing. Potion ingredients are category 4, so they match by name.
+function stackGroup(r) {
+  const name = String(r.Name || '');
+  if (/^(unstrung|unenchanted) /i.test(name)) return 'weapons';
+  if ([2, 16, 18].includes(Number(r.Categories)) || /potion|^hot /i.test(name)) return 'food';
+  return null;
+}
+
 const TOTEM_BASES = {
   'Fragile Totem': -15,
   'Stable Totem': -30,
@@ -1058,15 +1076,26 @@ function mostCommon(values) {
 // What a file says right now. A true term means it is already struck in this file.
 function readTerms(db) {
   const hasTable = name => fetchRows(db, "SELECT name FROM sqlite_master WHERE type='table' AND name=?", [name]).length > 0;
-  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, bankBoxWithdraw: true, stackNewItems: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, occultXpMult: 1, craftSpeed: 1, mobRespawnSpeed: 1, newSize: null, resourceSize: null };
-  const changed = { resources: [], unstacked: [] };
+  const terms = { noGatherCurse: true, noCombatCurse: true, noStealCurse: true, noCraftCurse: true, fairPeddler: true, freeEstate: true, craftMany: true, bankBoxWithdraw: true, stackFood: false, stackWeapons: false, upgradeResources: false, totemMult: 1, ichorMult: 1, fullWait: 5, occultXpMult: 1, craftSpeed: 1, mobRespawnSpeed: 1, foodSize: null, weaponSize: null, resourceSize: null, toolsStacked: false };
+  const changed = { resources: [], food: [], weapons: [] };
+  const total = { resources: Object.keys(VANILLA.resources).length, food: 0, weapons: 0 };
 
   if (hasTable('ItemDefs')) {
-    for (const item of fetchRows(db, "SELECT Id, Name, Stackable, MaxStackSize, Components FROM ItemDefs")) {
+    for (const item of fetchRows(db, "SELECT Id, Name, Categories, Stackable, MaxStackSize, Components FROM ItemDefs")) {
       const st = Number(item.Stackable);
       const max = Number(item.MaxStackSize);
       if (VANILLA.resources[item.Id] !== undefined && max !== VANILLA.resources[item.Id]) changed.resources.push(max);
-      if (VANILLA.unstacked[item.Id] && (st !== VANILLA.unstacked[item.Id][0] || max !== VANILLA.unstacked[item.Id][1])) changed.unstacked.push(max);
+      const vanilla = VANILLA.unstacked[item.Id];
+      if (vanilla) {
+        const group = stackGroup(item);
+        const moved = st !== vanilla[0] || max !== vanilla[1];
+        if (group) {
+          total[group]++;
+          if (moved) changed[group].push(max);
+        } else if (moved) {
+          terms.toolsStacked = true;
+        }
+      }
       const cleanser = CLEANSERS.find(k => k.bases[item.Name]);
       if (cleanser) {
         try {
@@ -1084,8 +1113,8 @@ function readTerms(db) {
   }
 
   // A few differences can be a game patch. A stack term counts as struck when most of its items moved.
-  [['upgradeResources', 'resourceSize', 'resources'], ['stackNewItems', 'newSize', 'unstacked']].forEach(([box, size, group]) => {
-    terms[box] = changed[group].length > Object.keys(VANILLA[group]).length / 2;
+  [['upgradeResources', 'resourceSize', 'resources'], ['stackFood', 'foodSize', 'food'], ['stackWeapons', 'weaponSize', 'weapons']].forEach(([box, size, group]) => {
+    terms[box] = changed[group].length > total[group] / 2;
     if (terms[box]) terms[size] = mostCommon(changed[group]);
   });
 
@@ -1173,16 +1202,20 @@ function processDb(db, options, isServer) {
         st = 1;
         max = options.upgradeResources ? options.resourceStackSize : vanillaResource;
       } else if (vanillaUnstacked) {
-        [st, max] = options.stackNewItems ? [1, options.newStackSize] : vanillaUnstacked;
+        const group = stackGroup(item);
+        [st, max] = group === 'food' && options.stackFood ? [1, options.foodStackSize]
+          : group === 'weapons' && options.stackWeapons ? [1, options.weaponStackSize]
+          : vanillaUnstacked;
       } else if (VANILLA.leftovers[item.Id] !== undefined) {
         if (!options.upgradeResources) max = VANILLA.leftovers[item.Id];
       } else if (isEligibleForStack(item)) {
         // Items added by a later patch have no vanilla values, so they can only be struck.
         if (options.upgradeResources && isVanillaResource(st, max)) {
           max = options.resourceStackSize;
-        } else if (options.stackNewItems && isVanillaUnstacked(st, max)) {
-          st = 1;
-          max = options.newStackSize;
+        } else if (isVanillaUnstacked(st, max)) {
+          const group = stackGroup(item);
+          if (group === 'food' && options.stackFood) [st, max] = [1, options.foodStackSize];
+          else if (group === 'weapons' && options.stackWeapons) [st, max] = [1, options.weaponStackSize];
         }
       }
       const stacked = st !== Number(item.Stackable) || max !== Number(item.MaxStackSize);
@@ -1368,8 +1401,10 @@ async function runMod() {
     craftMany: $('craftMany').checked,
     bankBoxWithdraw: $('bankBoxWithdraw').checked,
     changedRates: RATE_BOXES.filter(id => Number($(id).value) !== loadedTerms[id]),
-    stackNewItems: $('stackNewItems').checked,
-    newStackSize: Number($('newStackSize').value),
+    stackFood: $('stackFood').checked,
+    foodStackSize: Number($('foodStackSize').value),
+    stackWeapons: $('stackWeapons').checked,
+    weaponStackSize: Number($('weaponStackSize').value),
     upgradeResources: $('upgradeResources').checked,
     resourceStackSize: Number($('resourceStackSize').value)
   };
